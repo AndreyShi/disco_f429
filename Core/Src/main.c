@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "display.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -94,17 +94,20 @@ int main(void)
   MX_USART1_UART_Init();
   MX_SPI5_Init();
   /* USER CODE BEGIN 2 */
-
+  ResetDisplay();
+  DisplayON();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-  //  if(HAL_GPIO_ReadPin(button_GPIO_Port, button_Pin) == GPIO_PIN_SET)
-  //      { HAL_GPIO_WritePin(GPIOG, LD3_Pin|LD4_Pin, GPIO_PIN_SET);}
-  //  else
-   //     { HAL_GPIO_WritePin(GPIOG, LD3_Pin|LD4_Pin, GPIO_PIN_RESET);}
+    HAL_Delay(100);
+    ReadDisplayStatus();
+    //ReadDisplayId();
+    //ReadDisplayPowerMode();
+    //ReadDisplayPixelFormat();
+    //ReadDisplayStatus();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -271,7 +274,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pin = lcd_csx_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(lcd_csx_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : button_Pin */

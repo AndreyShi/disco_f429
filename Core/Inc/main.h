@@ -31,7 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+extern SPI_HandleTypeDef hspi5;
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
