@@ -22,6 +22,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "display.h"
+#include <stdio.h>
+int __io_putchar(int ch);
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -96,6 +98,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   ResetDisplay();
   DisplayON();
+  printf("display on");
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -305,6 +308,12 @@ static void MX_GPIO_Init(void)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
   HAL_GPIO_TogglePin(GPIOG,LD3_Pin|LD4_Pin);
+}
+
+int __io_putchar(int ch)
+{
+  HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, 0xFFFF);
+  return ch;
 }
 /* USER CODE END 4 */
 
