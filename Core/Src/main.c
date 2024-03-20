@@ -239,8 +239,6 @@ static void MX_USART1_UART_Init(void)
   }
   /* USER CODE BEGIN USART1_Init 2 */
   HAL_UART_Receive_IT(&huart1, uart_Data, UART_RX_BUFFER_SZ);
-  HAL_NVIC_SetPriority(USART1_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(USART1_IRQn);
   /* USER CODE END USART1_Init 2 */
 
 }
