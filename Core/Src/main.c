@@ -61,7 +61,7 @@ static void MX_SPI5_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-#define UART_RX_BUFFER_SZ 5
+#define UART_RX_BUFFER_SZ 1
 uint8_t uart_Data[UART_RX_BUFFER_SZ];
 /* USER CODE END 0 */
 
@@ -98,6 +98,10 @@ int main(void)
   /* USER CODE BEGIN 2 */
   ResetDisplay();
   DisplayON();
+  // Turn off buffers, so I/O occurs immediately
+  setvbuf(stdin, NULL, _IONBF, 0);  
+  setvbuf(stdout, NULL, _IONBF, 0);
+  setvbuf(stderr, NULL, _IONBF, 0);
   printf("display on");
   /* USER CODE END 2 */
 
@@ -105,8 +109,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    HAL_Delay(100);
+    HAL_Delay(1000);
     ReadDisplayStatus();
+    //printf("display on");
     //ReadDisplayId();
     //ReadDisplayPowerMode();
     //ReadDisplayPixelFormat();
@@ -357,11 +362,12 @@ static void MX_GPIO_Init(void)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
   HAL_GPIO_TogglePin(GPIOG,LD3_Pin|LD4_Pin);
+  HAL_UART_Receive_IT(huart, uart_Data, UART_RX_BUFFER_SZ);
 }
 
 int __io_putchar(int ch)
 {
-  HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, 0xFFFF);
+  HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, 10);
   return ch;
 }
 /* USER CODE END 4 */
