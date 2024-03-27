@@ -14,10 +14,10 @@ uint32_t ReadDisplayStatus(void)
   cs_low;
   dcx_cmd;
   HAL_SPI_Transmit(display_spi,(uint8_t*)"\x09", 1, 2);
-  uint8_t pData[4] = {0}; 
-  HAL_SPI_Receive(display_spi, pData, 4, 1);
+  uint32_t pData = 0; 
+  uint32_t error = HAL_SPI_Receive(display_spi, (uint8_t*)&pData, 4, 2);
   cs_hi;
-  return 0;
+  return pData;
 }
 
 uint32_t ReadDisplayId(void)
@@ -26,7 +26,7 @@ uint32_t ReadDisplayId(void)
   dcx_cmd;
   HAL_SPI_Transmit(display_spi,(uint8_t*)"\x04", 1, 2);
   uint8_t pData[4] = {0}; 
-  HAL_SPI_Receive(display_spi, pData, 4, 1);
+  HAL_SPI_Receive(display_spi, pData, 4, 2);
   cs_hi;
   return 0;
 }
@@ -36,10 +36,10 @@ uint8_t ReadDisplayPowerMode(void)
   cs_low;
   dcx_cmd;
   HAL_SPI_Transmit(display_spi,(uint8_t*)"\x0A", 1, 2);
-  uint8_t pData[2] = {0}; 
-  HAL_SPI_Receive(display_spi, pData, 2, 1);
+  uint8_t pData = 0; 
+  HAL_SPI_Receive(display_spi, &pData, 1, 2);
   cs_hi;
-  return 0;
+  return pData;
 }
 
 uint16_t ReadDisplayPixelFormat(void)
@@ -48,7 +48,7 @@ uint16_t ReadDisplayPixelFormat(void)
   dcx_cmd;
   HAL_SPI_Transmit(display_spi,(uint8_t*)"\x0C", 1, 2);
   uint8_t pData[1] = {0}; 
-  HAL_SPI_Receive(display_spi, pData, 1, 1);
+  HAL_SPI_Receive(display_spi, pData, 1, 2);
   cs_hi;
   return 0; 
 }

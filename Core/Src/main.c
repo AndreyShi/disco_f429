@@ -96,21 +96,22 @@ int main(void)
   MX_USART1_UART_Init();
   MX_SPI5_Init();
   /* USER CODE BEGIN 2 */
-  ResetDisplay();
-  DisplayON();
+  //ResetDisplay();
+  //DisplayON();
   // Turn off buffers, so I/O occurs immediately
   setvbuf(stdin, NULL, _IONBF, 0);  
   setvbuf(stdout, NULL, _IONBF, 0);
   setvbuf(stderr, NULL, _IONBF, 0);
-  printf("display on");
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    HAL_Delay(1000);
-    ReadDisplayStatus();
+    HAL_Delay(1000); 
+    printf("Display Status: %lu\r\n",ReadDisplayStatus());
+    //printf("DisplayPowerMode: %u\r\n",ReadDisplayPowerMode());
     //printf("display on");
     //ReadDisplayId();
     //ReadDisplayPowerMode();
