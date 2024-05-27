@@ -119,18 +119,18 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {  
-    //printf("Display Status: %d %lu\n",HAL_ADC_PollForConversion(&hadc1, 1000),hadc1.Instance->DR);
-
-    while(buf_itera < 500)
-    {
-      if(HAL_ADC_PollForConversion(&hadc1, 1000) == HAL_OK)
-          {buf[buf_itera++] = hadc1.Instance->DR;}
-      else
-          {break;}
-    }
+    printf("Display Status: %d %lu\n",HAL_ADC_PollForConversion(&hadc1, 1000),hadc1.Instance->DR);
+    __asm("nop");
+   // while(buf_itera < 500)
+    //{
+    //  if(HAL_ADC_PollForConversion(&hadc1, 1000) == HAL_OK)
+    //      {buf[buf_itera++] = hadc1.Instance->DR;}
+    //  else
+    //      {break;}
+    //}
     //HAL_ADC_Start(&hadc1);
     // __HAL_ADC_CLEAR_FLAG(&hadc1, ADC_FLAG_EOC | ADC_FLAG_OVR);
-    hadc1.Instance->CR2 |= (uint32_t)ADC_CR2_SWSTART;
+    //hadc1.Instance->CR2 |= (uint32_t)ADC_CR2_SWSTART;
     //printf("Display Status: %lu\r\n",ReadDisplayStatus());
     //printf("DisplayPowerMode: %u\r\n",ReadDisplayPowerMode());
     //printf("display on");
@@ -211,7 +211,7 @@ static void MX_ADC1_Init(void)
   /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
   */
   hadc1.Instance = ADC1;
-  hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV8;
+  hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
   hadc1.Init.Resolution = ADC_RESOLUTION_12B;
   hadc1.Init.ScanConvMode = DISABLE;
   hadc1.Init.ContinuousConvMode = ENABLE;
@@ -221,7 +221,7 @@ static void MX_ADC1_Init(void)
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc1.Init.NbrOfConversion = 1;
   hadc1.Init.DMAContinuousRequests = DISABLE;
-  hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  hadc1.Init.EOCSelection = ADC_EOC_SEQ_CONV;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
   {
     Error_Handler();
@@ -231,7 +231,7 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_4;
   sConfig.Rank = 1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_480CYCLES;
+  sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();

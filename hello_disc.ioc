@@ -1,7 +1,7 @@
 #MicroXplorer Configuration settings - do not modify
 ADC1.Channel-7\#ChannelRegularConversion=ADC_CHANNEL_4
 ADC1.ContinuousConvMode=ENABLE
-ADC1.EOCSelection=ADC_EOC_SINGLE_CONV
+ADC1.EOCSelection=ADC_EOC_SEQ_CONV
 ADC1.IPParameters=Rank-7\#ChannelRegularConversion,master,Channel-7\#ChannelRegularConversion,SamplingTime-7\#ChannelRegularConversion,NbrOfConversionFlag,ContinuousConvMode,EOCSelection,NbrOfConversion
 ADC1.NbrOfConversion=1
 ADC1.NbrOfConversionFlag=1
