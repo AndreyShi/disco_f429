@@ -23,7 +23,16 @@
 /* USER CODE BEGIN Includes */
 #include "display.h"
 #include <stdio.h>
+
+#ifdef __cplusplus
+extern "C" int __io_putchar(int ch);
+#else
 int __io_putchar(int ch);
+#endif
+
+#include "MPU6050_6Axis_MotionApps20.h"
+MPU6050 mpu;
+#define accelgyro mpu
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,6 +58,8 @@ I2C_HandleTypeDef hi2c2;
 
 SPI_HandleTypeDef hspi5;
 
+TIM_HandleTypeDef htim7;
+
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
@@ -63,6 +74,7 @@ static void MX_USART1_UART_Init(void);
 static void MX_SPI5_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_I2C2_Init(void);
+static void MX_TIM7_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -74,6 +86,7 @@ uint8_t uart_Data[UART_RX_BUFFER_SZ];
 uint16_t adc_buff[5][10];
 uint16_t buf[500];
 int buf_itera;
+int ifg;
 /* USER CODE END 0 */
 
 /**
@@ -109,7 +122,9 @@ int main(void)
   MX_SPI5_Init();
   MX_ADC1_Init();
   MX_I2C2_Init();
+  MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
+  ifg = 1;//timer7 ready
   //ResetDisplay();
   //DisplayON();
   // Turn off buffers, so I/O occurs immediately
@@ -123,8 +138,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {  
-    printf("Display Status: %d %lu\n",HAL_ADC_PollForConversion(&hadc1, 1000),hadc1.Instance->DR);
+    //printf("Display Status: %d %lu\n",HAL_ADC_PollForConversion(&hadc1, 1000),hadc1.Instance->DR);
+    printf("TMR: %lu\n",micros());
     __asm("nop");
+    HAL_Delay(30);
    // while(buf_itera < 500)
     //{
     //  if(HAL_ADC_PollForConversion(&hadc1, 1000) == HAL_OK)
@@ -338,6 +355,45 @@ static void MX_SPI5_Init(void)
   /* USER CODE BEGIN SPI5_Init 2 */
 
   /* USER CODE END SPI5_Init 2 */
+
+}
+
+/**
+  * @brief TIM7 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM7_Init(void)
+{
+
+  /* USER CODE BEGIN TIM7_Init 0 */
+
+  /* USER CODE END TIM7_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM7_Init 1 */
+
+  /* USER CODE END TIM7_Init 1 */
+  htim7.Instance = TIM7;
+  htim7.Init.Prescaler = 83;
+  htim7.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim7.Init.Period = 65535;
+  htim7.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim7) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim7, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM7_Init 2 */
+   HAL_TIM_Base_Start(&htim7);
+   __HAL_TIM_CLEAR_FLAG(&htim7, TIM_FLAG_UPDATE);
+  /* USER CODE END TIM7_Init 2 */
 
 }
 
