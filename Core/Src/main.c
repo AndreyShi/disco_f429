@@ -125,6 +125,9 @@ void dmpDataReady() {
    int16_t ax, ay, az;
    int16_t gx, gy, gz;
    int16_t offset = 0;
+     uint32_t timer1ms;
+  uint32_t timer1s;
+  uint32_t timer1m;
 /* USER CODE END 0 */
 
 /**
@@ -174,7 +177,16 @@ int main(void)
   mpu.initialize();
   // verify connection
   Serial.println("Testing device connections...");
-  Serial.println(accelgyro.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
+
+  while(1){
+      bool tst = accelgyro.testConnection();
+      Serial.println(tst ? "MPU6050 connection successful" : "MPU6050 connection failed");
+      if(tst == false)
+          { HAL_Delay(5000);}
+      else
+          { break;}
+  }
+  
   mpu.PrintActiveOffsets();
   Serial.println(F("Initializing DMP..."));
   devStatus = mpu.dmpInitialize();
@@ -182,7 +194,7 @@ int main(void)
         // Calibration Time: generate offsets and calibrate our MPU6050
         //mpu.CalibrateAccel(6);//old 6
         //mpu.CalibrateGyro(6);//old 6
-        //mpu.PrintActiveOffsets();
+        mpu.PrintActiveOffsets();
         // turn on the DMP, now that it's ready
         Serial.println(F("Enabling DMP..."));
         mpu.setDMPEnabled(true);
@@ -209,16 +221,23 @@ int main(void)
         Serial.print(devStatus);
         Serial.println(F(")"));
     }
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
+  while (1)   
   {  
     delay(100);
-    if (!dmpReady) {continue;}
+    if (!dmpReady) {
+      printf("dmp is not ready!\n");
+      continue;
+    }
 
-    if (!mpuInterrupt) {continue;}
+    if (!mpuInterrupt) {
+      printf("mpuInterrupt is not ready!\n");
+      continue;
+    }
 
     mpuInterrupt = false;
     // read a packet from FIFO
@@ -230,6 +249,7 @@ int main(void)
             mpu.dmpGetQuaternion(&q, fifoBuffer);
             mpu.dmpGetGravity(&gravity, &q);
             mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
+            printf("%2ld:%2ld:%3ld  ", timer1m,timer1s,timer1ms);
             Serial.print("ypr\t");
             Serial.print(ypr[0] * 180/M_PI);
             Serial.print("\t");
@@ -237,7 +257,22 @@ int main(void)
             Serial.print("\t");
             Serial.println(ypr[2] * 180/M_PI,1);
         #endif
+
+        #ifdef OUTPUT_READABLE_EULER
+            // display Euler angles in degrees
+            mpu.dmpGetQuaternion(&q, fifoBuffer);
+            mpu.dmpGetEuler(euler, &q);
+            Serial.print("euler\t");
+            Serial.print(euler[0] * 180/M_PI);
+            Serial.print("\t");
+            Serial.print(euler[1] * 180/M_PI);
+            Serial.print("\t");
+            Serial.print(euler[2] * 180/M_PI);
+            Serial.println();
+        #endif
     }
+    else
+        { printf("mpu.dmpGetCurrentFIFOPacket false\n");}
      //accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
      //printf("%d %d %d %d %d %d\n",ax, ay, az, gx, gy, gz);
      //delay(100);
