@@ -69,7 +69,8 @@
         "defineList": [
           "DEBUG",
           "USE_HAL_DRIVER",
-          "STM32F429xx"
+          "STM32F429xx",
+          "DMP"
         ]
       }
     },

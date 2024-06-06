@@ -188,6 +188,7 @@ int main(void)
   }
   
   mpu.PrintActiveOffsets();
+  #ifdef DMP
   Serial.println(F("Initializing DMP..."));
   devStatus = mpu.dmpInitialize();
   if (devStatus == 0) {
@@ -221,14 +222,28 @@ int main(void)
         Serial.print(devStatus);
         Serial.println(F(")"));
     }
-
+  #endif
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  float delta = 0;
+  int ibd = 0;
+  #define off_y  1.8F
+  #define off_p -1.98F
+  #define off_r  0.44F
   while (1)   
   {  
+    #ifdef DMP
+          mpu.resetFIFO();
+      mpu.resetDMP();
     delay(100);
+    ibd++;
+    if(ibd >= 30)
+    {
+      ibd = 0;
+      delta += 0.015;
+    }
     if (!dmpReady) {
       printf("dmp is not ready!\n");
       continue;
@@ -238,6 +253,7 @@ int main(void)
       printf("mpuInterrupt is not ready!\n");
       continue;
     }
+    printf("Int: %d  ",mpu.getMotionStatus());
 
     mpuInterrupt = false;
     // read a packet from FIFO
@@ -249,13 +265,17 @@ int main(void)
             mpu.dmpGetQuaternion(&q, fifoBuffer);
             mpu.dmpGetGravity(&gravity, &q);
             mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
+            //mpu.dmpGetAccel(&ax, fifoBuffer);
+            //mpu.dmpGetGyro(&gx, fifoBuffer);
             printf("%2ld:%2ld:%3ld  ", timer1m,timer1s,timer1ms);
             Serial.print("ypr\t");
-            Serial.print(ypr[0] * 180/M_PI);
+            printf("  delta  %.3f  ",delta);
+            Serial.print(ypr[0] * 180/M_PI + delta + off_y);
             Serial.print("\t");
-            Serial.print(ypr[1] * 180/M_PI);
+            Serial.print(ypr[1] * 180/M_PI + off_p);
             Serial.print("\t");
-            Serial.println(ypr[2] * 180/M_PI,1);
+            Serial.println(ypr[2] * 180/M_PI + off_r,1);
+            //printf("   %d %d %d %d %d %d\n",ax, ay, az, gx, gy, gz);
         #endif
 
         #ifdef OUTPUT_READABLE_EULER
@@ -273,9 +293,14 @@ int main(void)
     }
     else
         { printf("mpu.dmpGetCurrentFIFOPacket false\n");}
-     //accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
-     //printf("%d %d %d %d %d %d\n",ax, ay, az, gx, gy, gz);
-     //delay(100);
+    #endif
+    #ifdef RAW
+     if(accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz) == -1)
+         { printf("mpu.getMotion6 false\n");}
+     else
+         { printf("   %d %d %d %d %d %d\n",ax, ay, az, gx, gy, gz);}
+     delay(100);
+    #endif   
     //printf("Display Status: %d %lu\n",HAL_ADC_PollForConversion(&hadc1, 1000),hadc1.Instance->DR);
     //printf("TMR: %lu\n",micros());
    // __asm("nop");
