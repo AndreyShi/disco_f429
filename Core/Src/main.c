@@ -128,6 +128,7 @@ void dmpDataReady() {
      uint32_t timer1ms;
   uint32_t timer1s;
   uint32_t timer1m;
+    int16_t gxyz[3];//, gy, gz;
 /* USER CODE END 0 */
 
 /**
@@ -191,20 +192,15 @@ int main(void)
   #ifdef DMP
   Serial.println(F("Initializing DMP..."));
   devStatus = mpu.dmpInitialize();
+    mpu.PrintActiveOffsets();
   if (devStatus == 0) {
         // Calibration Time: generate offsets and calibrate our MPU6050
-        //mpu.CalibrateAccel(6);//old 6
+        mpu.CalibrateAccel(6);//old 6
         //mpu.CalibrateGyro(6);//old 6
         mpu.PrintActiveOffsets();
         // turn on the DMP, now that it's ready
         Serial.println(F("Enabling DMP..."));
         mpu.setDMPEnabled(true);
-
-        // enable Arduino interrupt detection
-        Serial.print(F("Enabling interrupt detection (Arduino external interrupt "));
-        //Serial.print(digitalPinToInterrupt(INTERRUPT_PIN));// we set it on hal drivers
-        Serial.println(F(")..."));
-        //attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), dmpDataReady, RISING);// we set it on hal drivers
         mpuIntStatus = mpu.getIntStatus();
 
         // set our DMP Ready flag so the main loop() function knows it's okay to use it
@@ -227,73 +223,67 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  float delta = 0;
-  int ibd = 0;
-  #define off_y  1.8F
-  #define off_p -1.98F
-  #define off_r  0.44F
   while (1)   
   {  
-    #ifdef DMP
+        mpu.resetFIFO();
+        HAL_Delay(100);
+
+        if (!dmpReady) {
+            printf("dmp is not ready!\n");
+            continue;
+        }
+        mpuIntStatus = mpu.getIntStatus();
+        fifoCount = mpu.getFIFOCount();
+        #ifndef BUILD_LIB
+        printf("Int: %d  Cnt:%d  ",mpuIntStatus, fifoCount);
+        #endif
+
+        if ((mpuIntStatus & 0x10) || fifoCount == 1024) {
           mpu.resetFIFO();
-      mpu.resetDMP();
-    delay(100);
-    ibd++;
-    if(ibd >= 30)
-    {
-      ibd = 0;
-      delta += 0.015;
-    }
-    if (!dmpReady) {
-      printf("dmp is not ready!\n");
-      continue;
-    }
+          Serial.println(F("FIFO overflow!"));
+        } else if (mpuIntStatus & 0x02) {
+          if(fifoCount < packetSize || fifoCount % packetSize) 
+          {
+            printf("bad packet, reset FIFO...!\n");
+            continue;
+          }
+          if(mpu.getFIFOBytes(fifoBuffer, packetSize) == 0)
+          {
+            printf("read fifo problem..!\n");
+            continue;
+          }
 
-    if (!mpuInterrupt) {
-      printf("mpuInterrupt is not ready!\n");
-      continue;
-    }
-    printf("Int: %d  ",mpu.getMotionStatus());
+          fifoCount -= packetSize;
+          mpu.dmpGetQuaternion(&q, fifoBuffer);
+          mpu.dmpGetGravity(&gravity, &q);
+          mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
+          //printf("%2ld:%2ld:%3ld  ", timer1m,timer1s,timer1ms);
+          #ifndef BUILD_LIB
+          printf("ypr  %.3f %.3f %.3f", ypr[0] * 180/M_PI, ypr[1] * 180/M_PI, ypr[2] * 180/M_PI);
+          #endif
 
-    mpuInterrupt = false;
-    // read a packet from FIFO
-    if (mpu.dmpGetCurrentFIFOPacket(fifoBuffer)) 
-    //mpu.getFIFOBytes(fifoBuffer, packetSize);
-    { // Get the Latest packet 
-        #ifdef OUTPUT_READABLE_YAWPITCHROLL
-            // display Euler angles in degrees
-            mpu.dmpGetQuaternion(&q, fifoBuffer);
-            mpu.dmpGetGravity(&gravity, &q);
-            mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
-            //mpu.dmpGetAccel(&ax, fifoBuffer);
-            //mpu.dmpGetGyro(&gx, fifoBuffer);
-            printf("%2ld:%2ld:%3ld  ", timer1m,timer1s,timer1ms);
-            Serial.print("ypr\t");
-            printf("  delta  %.3f  ",delta);
-            Serial.print(ypr[0] * 180/M_PI + delta + off_y);
-            Serial.print("\t");
-            Serial.print(ypr[1] * 180/M_PI + off_p);
-            Serial.print("\t");
-            Serial.println(ypr[2] * 180/M_PI + off_r,1);
-            //printf("   %d %d %d %d %d %d\n",ax, ay, az, gx, gy, gz);
-        #endif
+          //AFS_SEL Full Scale Range LSB Sensitivity 0 ±2g 16384 LSB/g, 1 ±4g 8192 LSB/g, 2 ±8g 4096 LSB/g, 3 ±16g 2048 LSB/g
+          mpu.dmpGetAccel(&aa, fifoBuffer);//for linear
+          mpu.dmpGetLinearAccel(&aaReal, &aa, &gravity);//for linear
+          #ifndef BUILD_LIB          
+          printf("  acc %.3f %.3f %.3f  ",(float)aaReal.x/16384.0,(float)aaReal.y/16384.0,(float)aaReal.z/16384.0);// todo view LinearAccel on display  
+          #endif
 
-        #ifdef OUTPUT_READABLE_EULER
-            // display Euler angles in degrees
-            mpu.dmpGetQuaternion(&q, fifoBuffer);
-            mpu.dmpGetEuler(euler, &q);
-            Serial.print("euler\t");
-            Serial.print(euler[0] * 180/M_PI);
-            Serial.print("\t");
-            Serial.print(euler[1] * 180/M_PI);
-            Serial.print("\t");
-            Serial.print(euler[2] * 180/M_PI);
-            Serial.println();
-        #endif
-    }
-    else
-        { printf("mpu.dmpGetCurrentFIFOPacket false\n");}
-    #endif
+          //FS_SEL Full Scale Range LSB Sensitivity 0 ±250 °/s 131 LSB/°/s, 1 ±500 °/s65.5 LSB/°/s, 2 ±1000 °/s 32.8 LSB/°/s, 3 ±2000 °/s 16.4 LSB/°/s
+          mpu.dmpGetGyro(gxyz, fifoBuffer);//for uglova9 speed
+          #ifndef BUILD_LIB
+          printf("spd %.3f %.3f %.3f",(float)gxyz[0]/16.4,(float)gxyz[1]/16.4,(float)gxyz[2]/16.4);//todo view uglova9 speed on display  
+          printf("\n");
+          #endif
+
+        } else if (mpuIntStatus == 1 && fifoCount == 0) {
+            printf("resetting DMP...\n");
+            mpu.resetDMP();
+            mpu.setDMPEnabled(false);
+            delay(50);
+            mpu.setDMPEnabled(true);
+        } else
+              { ;}
     #ifdef RAW
      if(accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz) == -1)
          { printf("mpu.getMotion6 false\n");}
@@ -301,27 +291,6 @@ int main(void)
          { printf("   %d %d %d %d %d %d\n",ax, ay, az, gx, gy, gz);}
      delay(100);
     #endif   
-    //printf("Display Status: %d %lu\n",HAL_ADC_PollForConversion(&hadc1, 1000),hadc1.Instance->DR);
-    //printf("TMR: %lu\n",micros());
-   // __asm("nop");
-   // HAL_Delay(30);
-   // while(buf_itera < 500)
-    //{
-    //  if(HAL_ADC_PollForConversion(&hadc1, 1000) == HAL_OK)
-    //      {buf[buf_itera++] = hadc1.Instance->DR;}
-    //  else
-    //      {break;}
-    //}
-    //HAL_ADC_Start(&hadc1);
-    // __HAL_ADC_CLEAR_FLAG(&hadc1, ADC_FLAG_EOC | ADC_FLAG_OVR);
-    //hadc1.Instance->CR2 |= (uint32_t)ADC_CR2_SWSTART;
-    //printf("Display Status: %lu\r\n",ReadDisplayStatus());
-    //printf("DisplayPowerMode: %u\r\n",ReadDisplayPowerMode());
-    //printf("display on");
-    //ReadDisplayId();
-    //ReadDisplayPowerMode();
-    //ReadDisplayPixelFormat();
-    //ReadDisplayStatus();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -723,8 +692,8 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI4_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI4_IRQn);
+  //HAL_NVIC_SetPriority(EXTI4_IRQn, 0, 0);
+  //HAL_NVIC_EnableIRQ(EXTI4_IRQn);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
