@@ -19,7 +19,9 @@
   },
   "targets": {
     "Debug": {
-      "excludeList": [],
+      "excludeList": [
+        "Drivers/mydrv/stm32f4xx_i2c.c"
+      ],
       "toolchain": "GCC",
       "compileConfig": {
         "cpuType": "Cortex-M3",
@@ -67,7 +69,8 @@
           "DEBUG",
           "USE_HAL_DRIVER",
           "STM32F429xx",
-          "DMP"
+          "DMP",
+          "DEBUG_CALIB"
         ]
       }
     },
