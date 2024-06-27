@@ -7228,7 +7228,7 @@ static HAL_StatusTypeDef I2C_WaitOnFlagUntilTimeout(I2C_HandleTypeDef *hi2c, uin
   while (__HAL_I2C_GET_FLAG(hi2c, Flag) == Status)
   {
     /* Check for the Timeout */
-    if (Timeout != HAL_MAX_DELAY)
+  /* if (Timeout != HAL_MAX_DELAY)
     {
       if (((HAL_GetTick() - Tickstart) > Timeout) || (Timeout == 0U))
       {
@@ -7239,13 +7239,13 @@ static HAL_StatusTypeDef I2C_WaitOnFlagUntilTimeout(I2C_HandleTypeDef *hi2c, uin
           hi2c->Mode              = HAL_I2C_MODE_NONE;
           hi2c->ErrorCode         |= HAL_I2C_ERROR_TIMEOUT;
 
-          /* Process Unlocked */
+
           __HAL_UNLOCK(hi2c);
 
           return HAL_ERROR;
         }
       }
-    }
+    }*/
   }
   return HAL_OK;
 }
@@ -7283,7 +7283,7 @@ static HAL_StatusTypeDef I2C_WaitOnMasterAddressFlagUntilTimeout(I2C_HandleTypeD
     }
 
     /* Check for the Timeout */
-    if (Timeout != HAL_MAX_DELAY)
+    /*if (Timeout != HAL_MAX_DELAY)
     {
       if (((HAL_GetTick() - Tickstart) > Timeout) || (Timeout == 0U))
       {
@@ -7294,13 +7294,13 @@ static HAL_StatusTypeDef I2C_WaitOnMasterAddressFlagUntilTimeout(I2C_HandleTypeD
           hi2c->Mode                = HAL_I2C_MODE_NONE;
           hi2c->ErrorCode           |= HAL_I2C_ERROR_TIMEOUT;
 
-          /* Process Unlocked */
+          
           __HAL_UNLOCK(hi2c);
 
           return HAL_ERROR;
         }
       }
-    }
+    }*/
   }
   return HAL_OK;
 }
@@ -7324,7 +7324,7 @@ static HAL_StatusTypeDef I2C_WaitOnTXEFlagUntilTimeout(I2C_HandleTypeDef *hi2c, 
     }
 
     /* Check for the Timeout */
-    if (Timeout != HAL_MAX_DELAY)
+    /*if (Timeout != HAL_MAX_DELAY)
     {
       if (((HAL_GetTick() - Tickstart) > Timeout) || (Timeout == 0U))
       {
@@ -7335,13 +7335,13 @@ static HAL_StatusTypeDef I2C_WaitOnTXEFlagUntilTimeout(I2C_HandleTypeDef *hi2c, 
           hi2c->Mode                = HAL_I2C_MODE_NONE;
           hi2c->ErrorCode           |= HAL_I2C_ERROR_TIMEOUT;
 
-          /* Process Unlocked */
+         
           __HAL_UNLOCK(hi2c);
 
           return HAL_ERROR;
         }
       }
-    }
+    }*/
   }
   return HAL_OK;
 }
@@ -7365,6 +7365,7 @@ static HAL_StatusTypeDef I2C_WaitOnBTFFlagUntilTimeout(I2C_HandleTypeDef *hi2c, 
     }
 
     /* Check for the Timeout */
+    /*
     if (Timeout != HAL_MAX_DELAY)
     {
       if (((HAL_GetTick() - Tickstart) > Timeout) || (Timeout == 0U))
@@ -7376,13 +7377,13 @@ static HAL_StatusTypeDef I2C_WaitOnBTFFlagUntilTimeout(I2C_HandleTypeDef *hi2c, 
           hi2c->Mode                = HAL_I2C_MODE_NONE;
           hi2c->ErrorCode           |= HAL_I2C_ERROR_TIMEOUT;
 
-          /* Process Unlocked */
+
           __HAL_UNLOCK(hi2c);
 
           return HAL_ERROR;
         }
       }
-    }
+    }*/
   }
   return HAL_OK;
 }
@@ -7406,6 +7407,7 @@ static HAL_StatusTypeDef I2C_WaitOnSTOPFlagUntilTimeout(I2C_HandleTypeDef *hi2c,
     }
 
     /* Check for the Timeout */
+    /*
     if (((HAL_GetTick() - Tickstart) > Timeout) || (Timeout == 0U))
     {
       if ((__HAL_I2C_GET_FLAG(hi2c, I2C_FLAG_STOPF) == RESET))
@@ -7415,12 +7417,12 @@ static HAL_StatusTypeDef I2C_WaitOnSTOPFlagUntilTimeout(I2C_HandleTypeDef *hi2c,
         hi2c->Mode                = HAL_I2C_MODE_NONE;
         hi2c->ErrorCode           |= HAL_I2C_ERROR_TIMEOUT;
 
-        /* Process Unlocked */
+
         __HAL_UNLOCK(hi2c);
 
         return HAL_ERROR;
       }
-    }
+    }*/
   }
   return HAL_OK;
 }
@@ -7483,6 +7485,7 @@ static HAL_StatusTypeDef I2C_WaitOnRXNEFlagUntilTimeout(I2C_HandleTypeDef *hi2c,
     }
 
     /* Check for the Timeout */
+    /*
     if (((HAL_GetTick() - Tickstart) > Timeout) || (Timeout == 0U))
     {
       if ((__HAL_I2C_GET_FLAG(hi2c, I2C_FLAG_RXNE) == RESET))
@@ -7492,12 +7495,12 @@ static HAL_StatusTypeDef I2C_WaitOnRXNEFlagUntilTimeout(I2C_HandleTypeDef *hi2c,
         hi2c->Mode                = HAL_I2C_MODE_NONE;
         hi2c->ErrorCode           |= HAL_I2C_ERROR_TIMEOUT;
 
-        /* Process Unlocked */
+
         __HAL_UNLOCK(hi2c);
 
         return HAL_ERROR;
       }
-    }
+    }*/
   }
   return HAL_OK;
 }
