@@ -7224,13 +7224,15 @@ static void I2C_DMAAbort(DMA_HandleTypeDef *hdma)
   */
 static HAL_StatusTypeDef I2C_WaitOnFlagUntilTimeout(I2C_HandleTypeDef *hi2c, uint32_t Flag, FlagStatus Status, uint32_t Timeout, uint32_t Tickstart)
 {
+  Timeout = 50000;
   /* Wait until flag is set */
   while (__HAL_I2C_GET_FLAG(hi2c, Flag) == Status)
   {
     /* Check for the Timeout */
-  /* if (Timeout != HAL_MAX_DELAY)
+   if (Timeout != HAL_MAX_DELAY)
     {
-      if (((HAL_GetTick() - Tickstart) > Timeout) || (Timeout == 0U))
+      //if (((HAL_GetTick() - Tickstart) > Timeout) || (Timeout == 0U))
+      if(--Timeout == 0U)
       {
         if ((__HAL_I2C_GET_FLAG(hi2c, Flag) == Status))
         {
@@ -7245,7 +7247,7 @@ static HAL_StatusTypeDef I2C_WaitOnFlagUntilTimeout(I2C_HandleTypeDef *hi2c, uin
           return HAL_ERROR;
         }
       }
-    }*/
+    }
   }
   return HAL_OK;
 }
@@ -7261,6 +7263,7 @@ static HAL_StatusTypeDef I2C_WaitOnFlagUntilTimeout(I2C_HandleTypeDef *hi2c, uin
   */
 static HAL_StatusTypeDef I2C_WaitOnMasterAddressFlagUntilTimeout(I2C_HandleTypeDef *hi2c, uint32_t Flag, uint32_t Timeout, uint32_t Tickstart)
 {
+  Timeout = 50000;
   while (__HAL_I2C_GET_FLAG(hi2c, Flag) == RESET)
   {
     if (__HAL_I2C_GET_FLAG(hi2c, I2C_FLAG_AF) == SET)
@@ -7283,9 +7286,10 @@ static HAL_StatusTypeDef I2C_WaitOnMasterAddressFlagUntilTimeout(I2C_HandleTypeD
     }
 
     /* Check for the Timeout */
-    /*if (Timeout != HAL_MAX_DELAY)
+    if (Timeout != HAL_MAX_DELAY)
     {
-      if (((HAL_GetTick() - Tickstart) > Timeout) || (Timeout == 0U))
+      //if (((HAL_GetTick() - Tickstart) > Timeout) || (Timeout == 0U))
+      if(--Timeout == 0)
       {
         if ((__HAL_I2C_GET_FLAG(hi2c, Flag) == RESET))
         {
@@ -7300,7 +7304,7 @@ static HAL_StatusTypeDef I2C_WaitOnMasterAddressFlagUntilTimeout(I2C_HandleTypeD
           return HAL_ERROR;
         }
       }
-    }*/
+    }
   }
   return HAL_OK;
 }
@@ -7315,6 +7319,7 @@ static HAL_StatusTypeDef I2C_WaitOnMasterAddressFlagUntilTimeout(I2C_HandleTypeD
   */
 static HAL_StatusTypeDef I2C_WaitOnTXEFlagUntilTimeout(I2C_HandleTypeDef *hi2c, uint32_t Timeout, uint32_t Tickstart)
 {
+  Timeout = 50000;
   while (__HAL_I2C_GET_FLAG(hi2c, I2C_FLAG_TXE) == RESET)
   {
     /* Check if a NACK is detected */
@@ -7324,9 +7329,10 @@ static HAL_StatusTypeDef I2C_WaitOnTXEFlagUntilTimeout(I2C_HandleTypeDef *hi2c, 
     }
 
     /* Check for the Timeout */
-    /*if (Timeout != HAL_MAX_DELAY)
+    if (Timeout != HAL_MAX_DELAY)
     {
-      if (((HAL_GetTick() - Tickstart) > Timeout) || (Timeout == 0U))
+      //if (((HAL_GetTick() - Tickstart) > Timeout) || (Timeout == 0U))
+      if(--Timeout == 0)
       {
         if ((__HAL_I2C_GET_FLAG(hi2c, I2C_FLAG_TXE) == RESET))
         {
@@ -7341,7 +7347,7 @@ static HAL_StatusTypeDef I2C_WaitOnTXEFlagUntilTimeout(I2C_HandleTypeDef *hi2c, 
           return HAL_ERROR;
         }
       }
-    }*/
+    }
   }
   return HAL_OK;
 }
@@ -7356,6 +7362,7 @@ static HAL_StatusTypeDef I2C_WaitOnTXEFlagUntilTimeout(I2C_HandleTypeDef *hi2c, 
   */
 static HAL_StatusTypeDef I2C_WaitOnBTFFlagUntilTimeout(I2C_HandleTypeDef *hi2c, uint32_t Timeout, uint32_t Tickstart)
 {
+  Timeout = 50000;
   while (__HAL_I2C_GET_FLAG(hi2c, I2C_FLAG_BTF) == RESET)
   {
     /* Check if a NACK is detected */
@@ -7365,10 +7372,11 @@ static HAL_StatusTypeDef I2C_WaitOnBTFFlagUntilTimeout(I2C_HandleTypeDef *hi2c, 
     }
 
     /* Check for the Timeout */
-    /*
+    
     if (Timeout != HAL_MAX_DELAY)
     {
-      if (((HAL_GetTick() - Tickstart) > Timeout) || (Timeout == 0U))
+      //if (((HAL_GetTick() - Tickstart) > Timeout) || (Timeout == 0U))
+      if(--Timeout == 0)
       {
         if ((__HAL_I2C_GET_FLAG(hi2c, I2C_FLAG_BTF) == RESET))
         {
@@ -7383,7 +7391,7 @@ static HAL_StatusTypeDef I2C_WaitOnBTFFlagUntilTimeout(I2C_HandleTypeDef *hi2c, 
           return HAL_ERROR;
         }
       }
-    }*/
+    }
   }
   return HAL_OK;
 }
@@ -7398,6 +7406,7 @@ static HAL_StatusTypeDef I2C_WaitOnBTFFlagUntilTimeout(I2C_HandleTypeDef *hi2c, 
   */
 static HAL_StatusTypeDef I2C_WaitOnSTOPFlagUntilTimeout(I2C_HandleTypeDef *hi2c, uint32_t Timeout, uint32_t Tickstart)
 {
+  Timeout = 50000;
   while (__HAL_I2C_GET_FLAG(hi2c, I2C_FLAG_STOPF) == RESET)
   {
     /* Check if a NACK is detected */
@@ -7407,8 +7416,9 @@ static HAL_StatusTypeDef I2C_WaitOnSTOPFlagUntilTimeout(I2C_HandleTypeDef *hi2c,
     }
 
     /* Check for the Timeout */
-    /*
-    if (((HAL_GetTick() - Tickstart) > Timeout) || (Timeout == 0U))
+    
+    //if (((HAL_GetTick() - Tickstart) > Timeout) || (Timeout == 0U))
+    if(--Timeout == 0)
     {
       if ((__HAL_I2C_GET_FLAG(hi2c, I2C_FLAG_STOPF) == RESET))
       {
@@ -7422,7 +7432,7 @@ static HAL_StatusTypeDef I2C_WaitOnSTOPFlagUntilTimeout(I2C_HandleTypeDef *hi2c,
 
         return HAL_ERROR;
       }
-    }*/
+    }
   }
   return HAL_OK;
 }
@@ -7464,7 +7474,7 @@ static HAL_StatusTypeDef I2C_WaitOnSTOPRequestThroughIT(I2C_HandleTypeDef *hi2c)
   */
 static HAL_StatusTypeDef I2C_WaitOnRXNEFlagUntilTimeout(I2C_HandleTypeDef *hi2c, uint32_t Timeout, uint32_t Tickstart)
 {
-
+  Timeout = 50000;
   while (__HAL_I2C_GET_FLAG(hi2c, I2C_FLAG_RXNE) == RESET)
   {
     /* Check if a STOPF is detected */
@@ -7485,8 +7495,9 @@ static HAL_StatusTypeDef I2C_WaitOnRXNEFlagUntilTimeout(I2C_HandleTypeDef *hi2c,
     }
 
     /* Check for the Timeout */
-    /*
-    if (((HAL_GetTick() - Tickstart) > Timeout) || (Timeout == 0U))
+    
+    //if (((HAL_GetTick() - Tickstart) > Timeout) || (Timeout == 0U))
+    if(--Timeout == 0)
     {
       if ((__HAL_I2C_GET_FLAG(hi2c, I2C_FLAG_RXNE) == RESET))
       {
@@ -7500,7 +7511,7 @@ static HAL_StatusTypeDef I2C_WaitOnRXNEFlagUntilTimeout(I2C_HandleTypeDef *hi2c,
 
         return HAL_ERROR;
       }
-    }*/
+    }
   }
   return HAL_OK;
 }
