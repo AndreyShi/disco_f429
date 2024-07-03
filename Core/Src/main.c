@@ -264,8 +264,8 @@ __enable_irq();
           if(checkBuffer() == 0)
           {
             printf("fifo is zero..!\n");
-            printf("resetting sensor...\n");
-            mpu.resetSensors();
+            printf("setFIFOEnabled...\n");
+            mpu.setFIFOEnabled(true);
             delay(50);
             continue;
           }
@@ -304,7 +304,7 @@ __enable_irq();
             delay(50);
             mpu.setDMPEnabled(true);
         } else
-              { ;}
+              { printf("skip...\n");}
     #ifdef RAW
      if(accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz) == -1)
          { printf("mpu.getMotion6 false\n");}
