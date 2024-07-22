@@ -213,6 +213,11 @@ uint16_t I2Cdev::writeBit(uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint
 {
     uint8_t b;
     uint16_t res;
+    if(regAddr == 0x6A && bitNum == 2) //0x6A MPU6050_RA_USER_CTRL, 0x02 MPU6050_USERCTRL_FIFO_RESET_BIT
+    {
+        res = I2Cdev::writeByte(devAddr, regAddr, 0xC4,wireObj);
+        return res;
+    }
     //__disable_irq();
     I2Cdev::readByte(devAddr, regAddr, &b, I2Cdev::readTimeout,wireObj);
     b = (data != 0) ? (b | (1 << bitNum)) : (b & ~(1 << bitNum));
