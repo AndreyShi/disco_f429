@@ -169,10 +169,15 @@ uint8_t I2Cdev::readWord(uint8_t devAddr, uint8_t regAddr, uint16_t *data, uint1
 uint8_t I2Cdev::readBytes(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint8_t *data, uint16_t timeout,void* wireObj)
 {
     uint16_t tout = timeout > 0 ? timeout : I2CDEV_DEFAULT_READ_TIMEOUT;
-
+    uint8_t res;
+    __disable_irq();
     HAL_I2C_Master_Transmit(I2Cdev_hi2c, devAddr << 1, &regAddr, 1, tout);
-    if (HAL_I2C_Master_Receive(I2Cdev_hi2c, devAddr << 1, data, length, tout) == HAL_OK) return length;
-    return -1;
+    if (HAL_I2C_Master_Receive(I2Cdev_hi2c, devAddr << 1, data, length, tout) == HAL_OK) 
+        { res = length;}
+    else
+        { res = -1;}
+    __enable_irq();
+    return res;
 }
 
 /** Read multiple words from a 16-bit device register.
@@ -186,12 +191,15 @@ uint8_t I2Cdev::readBytes(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint
 uint8_t I2Cdev::readWords(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint16_t *data, uint16_t timeout,void* wireObj)
 {
     uint16_t tout = timeout > 0 ? timeout : I2CDEV_DEFAULT_READ_TIMEOUT;
-
+    uint8_t res;
+    __disable_irq();
     HAL_I2C_Master_Transmit(I2Cdev_hi2c, devAddr << 1, &regAddr, 1, tout);
     if (HAL_I2C_Master_Receive(I2Cdev_hi2c, devAddr << 1, (uint8_t *)data, length*2, tout) == HAL_OK)
-        return length;
+    {res = length;}//return length;
     else
-        return -1;
+    {res = - 1;}//return -1;
+    __enable_irq();
+    return res;
 }
 
 /** write a single bit in an 8-bit device register.
@@ -204,9 +212,18 @@ uint8_t I2Cdev::readWords(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint
 uint16_t I2Cdev::writeBit(uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint8_t data,void* wireObj)
 {
     uint8_t b;
+    uint16_t res;
+    if(regAddr == 0x6A && bitNum == 2) //0x6A MPU6050_RA_USER_CTRL, 0x02 MPU6050_USERCTRL_FIFO_RESET_BIT
+    {
+        res = I2Cdev::writeByte(devAddr, regAddr, 0xC4,wireObj);
+        return res;
+    }
+    //__disable_irq();
     I2Cdev::readByte(devAddr, regAddr, &b, I2Cdev::readTimeout,wireObj);
     b = (data != 0) ? (b | (1 << bitNum)) : (b & ~(1 << bitNum));
-    return I2Cdev::writeByte(devAddr, regAddr, b,wireObj);
+    res = I2Cdev::writeByte(devAddr, regAddr, b,wireObj);
+    //__enable_irq();
+    return res;
 }
 
 /** write a single bit in a 16-bit device register.
@@ -219,9 +236,13 @@ uint16_t I2Cdev::writeBit(uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint
 uint16_t I2Cdev::writeBitW(uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint16_t data,void* wireObj)
 {
     uint16_t w;
+    uint16_t res;
+    //__disable_irq();
     I2Cdev::readWord(devAddr, regAddr, &w, 100,wireObj);
     w = (data != 0) ? (w | (1 << bitNum)) : (w & ~(1 << bitNum));
-    return I2Cdev::writeWord(devAddr, regAddr, w,wireObj);
+    res = I2Cdev::writeWord(devAddr, regAddr, w,wireObj);
+    //__enable_irq();
+    return res;
 }
 
 /** Write multiple bits in an 8-bit device register.
@@ -242,19 +263,23 @@ uint16_t I2Cdev::writeBits(uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, u
     // 10100011 original & ~mask
     // 10101011 masked | value
     uint8_t b;
-    if (I2Cdev::readByte(devAddr, regAddr, &b, 100,wireObj) != 0)
+    //__disable_irq();
+    uint16_t res = I2Cdev::readByte(devAddr, regAddr, &b, 100,wireObj);
+    if (res != 0)
     {
         uint8_t mask = ((1 << length) - 1) << (bitStart - length + 1);
         data <<= (bitStart - length + 1); // shift data into correct position
         data &= mask; // zero all non-important bits in data
         b &= ~(mask); // zero all important bits in existing byte
         b |= data; // combine data with existing byte
-        return I2Cdev::writeByte(devAddr, regAddr, b,wireObj);
+        res = I2Cdev::writeByte(devAddr, regAddr, b,wireObj);
     }
     else
     {
-        return 0;
+        res = 0;
     }
+    //__enable_irq();
+    return res;
 }
 
 /** Write multiple bits in a 16-bit device register.
@@ -275,19 +300,23 @@ uint16_t I2Cdev::writeBitsW(uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, 
     // 1010001110010110 original & ~mask
     // 1010101110010110 masked | value
     uint16_t w;
-    if (I2Cdev::readWord(devAddr, regAddr, &w, 100,wireObj) != 0)
+   // __disable_irq();
+    uint16_t res = I2Cdev::readWord(devAddr, regAddr, &w, 100,wireObj);
+    if (res != 0)
     {
         uint16_t mask = ((1 << length) - 1) << (bitStart - length + 1);
         data <<= (bitStart - length + 1); // shift data into correct position
         data &= mask; // zero all non-important bits in data
         w &= ~(mask); // zero all important bits in existing word
         w |= data; // combine data with existing word
-        return I2Cdev::writeWord(devAddr, regAddr, w,wireObj);
+        res = I2Cdev::writeWord(devAddr, regAddr, w,wireObj);
     }
     else
     {
-        return 0;
+        res = 0;
     }
+   // __enable_irq();
+    return res;
 }
 
 /** Write single byte to an 8-bit device register.
@@ -321,7 +350,9 @@ uint16_t I2Cdev::writeWord(uint8_t devAddr, uint8_t regAddr, uint16_t data,void*
  */
 uint16_t I2Cdev::writeBytes(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint8_t* pData,void* wireObj)
 {
+    __disable_irq();
     HAL_StatusTypeDef status = HAL_I2C_Mem_Write(I2Cdev_hi2c, devAddr << 1, regAddr, I2C_MEMADD_SIZE_8BIT, pData, length, 1000);
+    __enable_irq();
     return status == HAL_OK;
 }
 
@@ -334,7 +365,9 @@ uint16_t I2Cdev::writeBytes(uint8_t devAddr, uint8_t regAddr, uint8_t length, ui
  */
 uint16_t I2Cdev::writeWords(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint16_t* pData,void* wireObj)
 {
+    __disable_irq();
     HAL_StatusTypeDef status = HAL_I2C_Mem_Write(I2Cdev_hi2c, devAddr << 1, regAddr, I2C_MEMADD_SIZE_8BIT, (uint8_t *)pData, sizeof(uint16_t) * length, 1000);
+    __enable_irq();
     return status == HAL_OK;
 }
 

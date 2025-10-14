@@ -129,6 +129,14 @@ void dmpDataReady() {
   uint32_t timer1s;
   uint32_t timer1m;
     int16_t gxyz[3];//, gy, gz;
+int checkBuffer(void)
+{
+  uint16_t summ = 0;
+  for(int i = 0; i < packetSize;i++)
+    { summ += fifoBuffer[i];}
+
+  return summ;
+}
 /* USER CODE END 0 */
 
 /**
@@ -138,7 +146,8 @@ void dmpDataReady() {
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+__disable_irq();
+__enable_irq();
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -185,7 +194,7 @@ int main(void)
       if(tst == false)
           { HAL_Delay(5000);}
       else
-          { break;}
+          {break;}
   }
   
   mpu.PrintActiveOffsets();
@@ -195,7 +204,7 @@ int main(void)
     mpu.PrintActiveOffsets();
   if (devStatus == 0) {
         // Calibration Time: generate offsets and calibrate our MPU6050
-        mpu.CalibrateAccel(6);//old 6
+        //mpu.CalibrateAccel(6);//old 6
         //mpu.CalibrateGyro(6);//old 6
         mpu.PrintActiveOffsets();
         // turn on the DMP, now that it's ready
@@ -252,6 +261,19 @@ int main(void)
             printf("read fifo problem..!\n");
             continue;
           }
+          if(checkBuffer() == 0)
+          {
+            printf("fifo is zero..!\n");
+            printf("setFIFOEnabled...\n");
+            mpu.setFIFOEnabled(true);
+            delay(50);
+            continue;
+          }
+          if(fifoBuffer[40] != 0xB2 && fifoBuffer[41] != 0x6A)
+          {
+            printf("wrong packet, reset FIFO...!\n");
+            continue;
+          }
 
           fifoCount -= packetSize;
           mpu.dmpGetQuaternion(&q, fifoBuffer);
@@ -275,7 +297,6 @@ int main(void)
           printf("spd %.3f %.3f %.3f",(float)gxyz[0]/16.4,(float)gxyz[1]/16.4,(float)gxyz[2]/16.4);//todo view uglova9 speed on display  
           printf("\n");
           #endif
-
         } else if (mpuIntStatus == 1 && fifoCount == 0) {
             printf("resetting DMP...\n");
             mpu.resetDMP();
@@ -283,7 +304,7 @@ int main(void)
             delay(50);
             mpu.setDMPEnabled(true);
         } else
-              { ;}
+              { printf("skip...\n");}
     #ifdef RAW
      if(accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz) == -1)
          { printf("mpu.getMotion6 false\n");}
@@ -404,7 +425,10 @@ static void MX_I2C2_Init(void)
 {
 
   /* USER CODE BEGIN I2C2_Init 0 */
-
+    /**I2C2 GPIO Configuration
+    PF0     ------> I2C2_SDA
+    PF1     ------> I2C2_SCL
+    */
   /* USER CODE END I2C2_Init 0 */
 
   /* USER CODE BEGIN I2C2_Init 1 */
