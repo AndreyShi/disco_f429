@@ -57,6 +57,10 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define lcd_spi_sck_Pin GPIO_PIN_7
+#define lcd_spi_sck_GPIO_Port GPIOF
+#define lcd_spi_mosi_Pin GPIO_PIN_9
+#define lcd_spi_mosi_GPIO_Port GPIOF
 #define lcd_csx_Pin GPIO_PIN_2
 #define lcd_csx_GPIO_Port GPIOC
 #define button_Pin GPIO_PIN_0
@@ -75,6 +79,8 @@ void Error_Handler(void);
 #define G5_GPIO_Port GPIOB
 #define lcd_dcx_Pin GPIO_PIN_13
 #define lcd_dcx_GPIO_Port GPIOD
+#define rs485_DERE_Pin GPIO_PIN_2
+#define rs485_DERE_GPIO_Port GPIOG
 #define R7_Pin GPIO_PIN_6
 #define R7_GPIO_Port GPIOG
 #define G6_Pin GPIO_PIN_7
@@ -85,6 +91,10 @@ void Error_Handler(void);
 #define R5_GPIO_Port GPIOA
 #define R2_Pin GPIO_PIN_10
 #define R2_GPIO_Port GPIOC
+#define rs485_DI_Pin GPIO_PIN_12
+#define rs485_DI_GPIO_Port GPIOC
+#define rs485_RO_Pin GPIO_PIN_2
+#define rs485_RO_GPIO_Port GPIOD
 #define G7_Pin GPIO_PIN_3
 #define G7_GPIO_Port GPIOD
 #define B2_Pin GPIO_PIN_6
