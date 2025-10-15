@@ -584,9 +584,9 @@ float get_stm_VDDA(ADC_HandleTypeDef *hadc){
     int adc_data = 0;
     float res = -1.0;
 
-    HAL_ADC_Start(&hadc1);
-    if(HAL_ADC_PollForConversion(&hadc1, 1000) == HAL_OK){
-        adc_data = (int)HAL_ADC_GetValue(&hadc1);
+    HAL_ADC_Start(hadc);
+    if(HAL_ADC_PollForConversion(hadc, 1000) == HAL_OK){
+        adc_data = (int)HAL_ADC_GetValue(hadc);
 
         //VREFINT = (adc_data × VREF_PLUS_CHARAC) / 4095.0f 
         //VDDA
