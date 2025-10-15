@@ -35,6 +35,11 @@ extern void MPU6050_Process(void);
 extern void dmpDataReady(void);
 #define UART_RX_BUFFER_SZ 1
 uint8_t uart_Data[UART_RX_BUFFER_SZ];
+
+//information from datasheet DS9405 Rev 12 for STM32F427xx STM32F429xx
+#define VREF_PLUS_CHARAC 3.3f
+#define VREFINT_CAL_ADDR 0x1FFF7A2A
+float get_stm_VDDA(ADC_HandleTypeDef *hadc);
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -54,7 +59,6 @@ uint8_t uart_Data[UART_RX_BUFFER_SZ];
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
-DMA_HandleTypeDef hdma_adc1;
 
 I2C_HandleTypeDef hi2c2;
 
@@ -72,7 +76,6 @@ UART_HandleTypeDef huart1;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_DMA_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_SPI5_Init(void);
 static void MX_ADC1_Init(void);
@@ -117,7 +120,6 @@ __enable_irq();
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_DMA_Init();
   MX_USART1_UART_Init();
   MX_SPI5_Init();
   MX_ADC1_Init();
@@ -133,7 +135,7 @@ __enable_irq();
   while (1)   
   {  
        //MPU6050_Process();
-
+    printf("Stm intref: %.2f\n",get_stm_VDDA(&hadc1));
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -210,7 +212,7 @@ static void MX_ADC1_Init(void)
   hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
   hadc1.Init.Resolution = ADC_RESOLUTION_12B;
   hadc1.Init.ScanConvMode = DISABLE;
-  hadc1.Init.ContinuousConvMode = ENABLE;
+  hadc1.Init.ContinuousConvMode = DISABLE;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
@@ -225,15 +227,15 @@ static void MX_ADC1_Init(void)
 
   /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
   */
-  sConfig.Channel = ADC_CHANNEL_4;
+  sConfig.Channel = ADC_CHANNEL_VREFINT;
   sConfig.Rank = 1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+  sConfig.SamplingTime = ADC_SAMPLETIME_480CYCLES;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
   }
   /* USER CODE BEGIN ADC1_Init 2 */
-   HAL_ADC_Start(&hadc1);
+
   /* USER CODE END ADC1_Init 2 */
 
 }
@@ -442,22 +444,6 @@ static void MX_USART1_UART_Init(void)
 }
 
 /**
-  * Enable DMA controller clock
-  */
-static void MX_DMA_Init(void)
-{
-
-  /* DMA controller clock enable */
-  __HAL_RCC_DMA2_CLK_ENABLE();
-
-  /* DMA interrupt init */
-  /* DMA2_Stream0_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);
-
-}
-
-/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -587,9 +573,27 @@ int __io_putchar(int ch)
   HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, 10);
   return ch;
 }
+
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
   dmpDataReady();
+}
+
+float get_stm_VDDA(ADC_HandleTypeDef *hadc){
+
+    int adc_data = 0;
+    float res = -1.0;
+
+    HAL_ADC_Start(&hadc1);
+    if(HAL_ADC_PollForConversion(&hadc1, 1000) == HAL_OK){
+        adc_data = (int)HAL_ADC_GetValue(&hadc1);
+
+        //VREFINT = (adc_data × VREF_PLUS_CHARAC) / 4095.0f 
+        //VDDA
+        res = (*((uint16_t*)VREFINT_CAL_ADDR) * VREF_PLUS_CHARAC) / adc_data;
+        //printf("ADC value: %d adc vol: %.2f\n",adc_data, res );
+    }
+    return res;
 }
 /* USER CODE END 4 */
 
