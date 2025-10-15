@@ -125,14 +125,14 @@ __enable_irq();
   MX_TIM7_Init();
   MX_UART5_Init();
   /* USER CODE BEGIN 2 */
-  MPU6050_Initialize();
+  //MPU6050_Initialize();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)   
   {  
-       MPU6050_Process();
+       //MPU6050_Process();
 
     /* USER CODE END WHILE */
 
