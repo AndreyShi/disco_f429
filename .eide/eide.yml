@@ -1,5 +1,5 @@
 version: "4.1"
-name: hello_disc
+name: disco_f429
 type: ARM
 deviceName: null
 packDir: null
