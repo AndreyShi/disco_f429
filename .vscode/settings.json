@@ -1,1 +1,7 @@
-{}
+{
+    "files.associations": {
+        "mpu6050_6axis_motionapps20.h": "c",
+        "main.h": "c",
+        "mpu6050.h": "c"
+    }
+}
