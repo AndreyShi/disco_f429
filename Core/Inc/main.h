@@ -32,6 +32,8 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 extern SPI_HandleTypeDef hspi5;
+void DWT_Init(void);
+void DWT_Delay(float seconds);
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

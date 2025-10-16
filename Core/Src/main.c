@@ -108,7 +108,7 @@ __enable_irq();
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+  DWT_Init();
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -599,6 +599,29 @@ float get_stm_VDDA(ADC_HandleTypeDef *hadc){
         //printf("ADC value: %d adc vol: %.2f\n",adc_data, res );
     }
     return res;
+}
+
+void DWT_Init(void)
+{
+    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+    DWT->CYCCNT = 0;
+    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+}
+
+// Задержка на основе DWT (работает без прерываний)
+void DWT_Delay(float seconds)
+{
+    uint32_t start = DWT->CYCCNT;
+    // Количество циклов на микросекунду (для 400MHz: 400 циклов/мкс)
+    //#define MSCIN1SEC 1000000 //кол-во микросекунд в 1 секунде
+    //#define MSIN1SEC  1000    //кол-во милисекунд в 1 секунде
+    //uint32_t cycles = microseconds * (SystemCoreClock / MSCIN1SEC);
+    float period = 1.0F / SystemCoreClock;
+    uint32_t cycles = seconds / period;
+
+    while ((DWT->CYCCNT - start) < cycles) {
+        __NOP();
+    }
 }
 /* USER CODE END 4 */
 
