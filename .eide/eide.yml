@@ -52,7 +52,11 @@ targets:
         floatingPointHardware: none
         options:
           version: 5
-          afterBuildTasks: []
+          afterBuildTasks:
+            - name: new postbuild task
+              abortAfterFailed: false
+              command: 'echo "elf: ${ExecutableName}.elf"'
+              disable: false
           asm-compiler:
             ASM_FLAGS: -DDEBUG
           beforeBuildTasks: []
@@ -65,6 +69,7 @@ targets:
             warnings: all-warnings
           global:
             $float-abi-type: softfp
+            arm-thumb-mode: thumb
             output-debug-info: enable
           linker:
             $toolName: auto
