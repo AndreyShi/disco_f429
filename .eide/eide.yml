@@ -30,9 +30,20 @@ targets:
         - Drivers/CMSIS/Device/ST/STM32F4xx/Include
         - Drivers/CMSIS/Include
         - Drivers/Display
+        - Drivers/BSP/Components/ili9341
+        - Drivers/BSP/STM32F429I-Discovery
       libList: []
     excludeList:
       - Drivers/mydrv/stm32f4xx_i2c.c
+      - Drivers/BSP/STM32F429I-Discovery/stm32f429i_discovery_eeprom.c
+      - Drivers/BSP/STM32F429I-Discovery/stm32f429i_discovery_gyroscope.c
+      - Drivers/BSP/STM32F429I-Discovery/stm32f429i_discovery_io.c
+      - Drivers/BSP/STM32F429I-Discovery/stm32f429i_discovery_lcd.c
+      - Drivers/BSP/STM32F429I-Discovery/stm32f429i_discovery_sdram.c
+      - Drivers/BSP/STM32F429I-Discovery/stm32f429i_discovery_ts.c
+      - Drivers/BSP/Components/i3g4250d/i3g4250d.c
+      - Drivers/BSP/Components/l3gd20/l3gd20.c
+      - Drivers/BSP/Components/stmpe811/stmpe811.c
     toolchain: GCC
     toolchainConfigMap:
       GCC:
