@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include "ili9341.h"
 #include "stm32f429i_discovery.h"
+#include "stm32f429i_discovery_lcd.h"
 #ifdef __cplusplus
 extern "C" int __io_putchar(int ch);
 #else
@@ -60,7 +61,7 @@ float get_stm_VDDA(ADC_HandleTypeDef *hadc);
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
 
-I2C_HandleTypeDef hi2c2;
+I2C_HandleTypeDef hi2c3;
 
 SPI_HandleTypeDef hspi5;
 
@@ -79,9 +80,9 @@ static void MX_GPIO_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_SPI5_Init(void);
 static void MX_ADC1_Init(void);
-static void MX_I2C2_Init(void);
 static void MX_TIM7_Init(void);
 static void MX_UART5_Init(void);
+static void MX_I2C3_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -123,16 +124,40 @@ __enable_irq();
   MX_USART1_UART_Init();
   MX_SPI5_Init();
   MX_ADC1_Init();
-  MX_I2C2_Init();
   MX_TIM7_Init();
   MX_UART5_Init();
+  MX_I2C3_Init();
   /* USER CODE BEGIN 2 */
   //MPU6050_Initialize();
+#ifdef LCD_SPI
   ili9341_Init_direct();
   int rotation = 4;
-  ILI9341_SetRotation(rotation);
-  uint16_t colors[] = {0x0000,0xF800, 0x07E0, 0x001F, 0xFFFF}; // Black, R,G,B,W
-  ILI9341_FillScreen(colors[rotation]);
+  while(1){
+    for (rotation = 0; rotation < 4; rotation++){
+      ILI9341_SetRotation(rotation);
+      uint16_t colors[] = {0x0000,0xF800, 0x07E0, 0x001F, 0xFFFF}; // Black, R,G,B,W
+      ILI9341_FillScreen(colors[rotation]);
+      HAL_Delay(2000);
+    }
+  } 
+#else
+    /* Initialize the LCD */
+  BSP_LCD_Init();
+  /* Initialize the LCD Layers */
+  BSP_LCD_LayerDefaultInit(1, LCD_FRAME_BUFFER);
+    /* Set LCD Foreground Layer  */
+  BSP_LCD_SelectLayer(1);
+  BSP_LCD_SetFont(&LCD_DEFAULT_FONT);
+  /* Clear the LCD */ 
+  BSP_LCD_SetBackColor(LCD_COLOR_WHITE); 
+  BSP_LCD_Clear(LCD_COLOR_WHITE);
+  /* Set the LCD Text Color */
+  BSP_LCD_SetTextColor(LCD_COLOR_DARKBLUE);  
+  /* Display LCD messages */
+  BSP_LCD_DisplayStringAt(0, 10, (uint8_t*)"STM32F429I BSP", CENTER_MODE);
+  BSP_LCD_SetFont(&Font16);
+  BSP_LCD_DisplayStringAt(0, 35, (uint8_t*)"Drivers examples", CENTER_MODE);
+#endif
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -246,53 +271,50 @@ static void MX_ADC1_Init(void)
 }
 
 /**
-  * @brief I2C2 Initialization Function
+  * @brief I2C3 Initialization Function
   * @param None
   * @retval None
   */
-static void MX_I2C2_Init(void)
+static void MX_I2C3_Init(void)
 {
 
-  /* USER CODE BEGIN I2C2_Init 0 */
-    /**I2C2 GPIO Configuration
-    PF0     ------> I2C2_SDA
-    PF1     ------> I2C2_SCL
-    */
-  /* USER CODE END I2C2_Init 0 */
+  /* USER CODE BEGIN I2C3_Init 0 */
 
-  /* USER CODE BEGIN I2C2_Init 1 */
+  /* USER CODE END I2C3_Init 0 */
 
-  /* USER CODE END I2C2_Init 1 */
-  hi2c2.Instance = I2C2;
-  hi2c2.Init.ClockSpeed = 400000;
-  hi2c2.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c2.Init.OwnAddress1 = 0;
-  hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-  hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-  hi2c2.Init.OwnAddress2 = 0;
-  hi2c2.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-  hi2c2.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-  if (HAL_I2C_Init(&hi2c2) != HAL_OK)
+  /* USER CODE BEGIN I2C3_Init 1 */
+
+  /* USER CODE END I2C3_Init 1 */
+  hi2c3.Instance = I2C3;
+  hi2c3.Init.ClockSpeed = 100000;
+  hi2c3.Init.DutyCycle = I2C_DUTYCYCLE_2;
+  hi2c3.Init.OwnAddress1 = 0;
+  hi2c3.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c3.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c3.Init.OwnAddress2 = 0;
+  hi2c3.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c3.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c3) != HAL_OK)
   {
     Error_Handler();
   }
 
   /** Configure Analogue filter
   */
-  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c2, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c3, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
   {
     Error_Handler();
   }
 
   /** Configure Digital filter
   */
-  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c2, 0) != HAL_OK)
+  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c3, 0) != HAL_OK)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN I2C2_Init 2 */
+  /* USER CODE BEGIN I2C3_Init 2 */
 
-  /* USER CODE END I2C2_Init 2 */
+  /* USER CODE END I2C3_Init 2 */
 
 }
 
@@ -465,28 +487,18 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
-  __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOG_CLK_ENABLE();
+  __HAL_RCC_GPIOE_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(lcd_csx_GPIO_Port, lcd_csx_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, B5_Pin|G2_Pin|R4_Pin|R5_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(lcd_dcx_GPIO_Port, lcd_dcx_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, R3_Pin|R6_Pin|G4_Pin|G5_Pin
-                          |B6_Pin|B7_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, lcd_dcx_Pin|G7_Pin|B2_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOG, rs485_DERE_Pin|R7_Pin|G3_Pin|B3_Pin
-                          |B4_Pin|LD3_Pin|LD4_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, G6_Pin|R2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOG, rs485_DERE_Pin|LD3_Pin|LD4_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : lcd_csx_Pin */
   GPIO_InitStruct.Pin = lcd_csx_Pin;
@@ -501,22 +513,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(button_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : B5_Pin G2_Pin R4_Pin R5_Pin */
-  GPIO_InitStruct.Pin = B5_Pin|G2_Pin|R4_Pin|R5_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : R3_Pin R6_Pin G4_Pin G5_Pin
-                           B6_Pin B7_Pin */
-  GPIO_InitStruct.Pin = R3_Pin|R6_Pin|G4_Pin|G5_Pin
-                          |B6_Pin|B7_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
   /*Configure GPIO pin : lcd_dcx_Pin */
   GPIO_InitStruct.Pin = lcd_dcx_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -530,27 +526,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   HAL_GPIO_Init(rs485_DERE_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : R7_Pin G3_Pin B3_Pin B4_Pin */
-  GPIO_InitStruct.Pin = R7_Pin|G3_Pin|B3_Pin|B4_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : G6_Pin R2_Pin */
-  GPIO_InitStruct.Pin = G6_Pin|R2_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : G7_Pin B2_Pin */
-  GPIO_InitStruct.Pin = G7_Pin|B2_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LD3_Pin LD4_Pin */
   GPIO_InitStruct.Pin = LD3_Pin|LD4_Pin;

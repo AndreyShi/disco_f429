@@ -514,6 +514,7 @@ void ILI9341_FillScreen(uint16_t color) {
     for(uint32_t i = 0; i < 240 * 320; i++) {
         ili9341_WriteData(hi);
         ili9341_WriteData(lo);
+        HAL_Delay(1);
     }
 }
 /**

@@ -2,6 +2,9 @@
     "files.associations": {
         "mpu6050_6axis_motionapps20.h": "c",
         "main.h": "c",
-        "mpu6050.h": "c"
+        "mpu6050.h": "c",
+        "fonts.h": "c",
+        "stm32f429i_discovery_lcd.h": "c",
+        "stm32f429i_discovery_sdram.h": "c"
     }
 }

@@ -203,7 +203,7 @@ uint8_t BSP_LCD_Init(void)
 
   /* LCD Init */
   LcdDrv->Init();
-  LcdDrv->Orient(ROTATION_0);
+  //LcdDrv->Orient(ROTATION_0);
   /* Initialize the SDRAM */
   BSP_SDRAM_Init();
 
