@@ -46,8 +46,9 @@ _Min_Stack_Size = 0x400; /* required amount of stack */
 MEMORY
 {
   CCMRAM    (xrw)    : ORIGIN = 0x10000000,   LENGTH = 64K
-  RAM    (xrw)    : ORIGIN = 0x20000000,   LENGTH = 192K
-  FLASH    (rx)    : ORIGIN = 0x8000000,   LENGTH = 2048K
+  RAM       (xrw)    : ORIGIN = 0x20000000,   LENGTH = 42K
+  RAM_LCD   (xrw)    : ORIGIN = 0x2000A800,   LENGTH = 150K
+  FLASH     (rx)     : ORIGIN = 0x8000000,    LENGTH = 2048K
 }
 
 /* Sections */
