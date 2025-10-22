@@ -6,6 +6,7 @@ packDir: null
 srcDirs:
   - Core
   - Drivers
+  - User
 virtualFolder:
   name: <virtual_root>
   files: []
@@ -35,6 +36,7 @@ targets:
         - Drivers/Display
         - Drivers/BSP/Components/ili9341
         - Drivers/BSP/STM32F429I-Discovery
+        - User
       libList: []
     excludeList:
       - Drivers/mydrv/stm32f4xx_i2c.c

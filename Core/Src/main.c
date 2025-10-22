@@ -25,6 +25,9 @@
 #include "ili9341.h"
 #include "stm32f429i_discovery.h"
 #include "stm32f429i_discovery_lcd.h"
+#include <stdlib.h>
+#include <string.h>
+#include "user.h"
 #ifdef __cplusplus
 extern "C" int __io_putchar(int ch);
 #else
@@ -37,10 +40,6 @@ extern void dmpDataReady(void);
 #define UART_RX_BUFFER_SZ 1
 uint8_t uart_Data[UART_RX_BUFFER_SZ];
 
-//information from datasheet DS9405 Rev 12 for STM32F427xx STM32F429xx
-#define VREF_PLUS_CHARAC 3.3f
-#define VREFINT_CAL_ADDR 0x1FFF7A2A
-float get_stm_VDDA(ADC_HandleTypeDef *hadc);
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -173,7 +172,8 @@ ili9341_Init();
   while (1)   
   {  
        //MPU6050_Process();
-    printf("Stm intref: %.2f\n",get_stm_VDDA(&hadc1));
+    print_uart("Stm intref: %.2f\n",get_stm_VDDA(&hadc1));
+    //stack_check();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -624,46 +624,6 @@ int __io_putchar(int ch)
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
   dmpDataReady();
-}
-
-float get_stm_VDDA(ADC_HandleTypeDef *hadc){
-
-    int adc_data = 0;
-    float res = -1.0;
-
-    HAL_ADC_Start(hadc);
-    if(HAL_ADC_PollForConversion(hadc, 1000) == HAL_OK){
-        adc_data = (int)HAL_ADC_GetValue(hadc);
-
-        //VREFINT = (adc_data × VREF_PLUS_CHARAC) / 4095.0f 
-        //VDDA
-        res = (*((uint16_t*)VREFINT_CAL_ADDR) * VREF_PLUS_CHARAC) / adc_data;
-        //printf("ADC value: %d adc vol: %.2f\n",adc_data, res );
-    }
-    return res;
-}
-
-void DWT_Init(void)
-{
-    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
-    DWT->CYCCNT = 0;
-    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
-}
-
-// Задержка на основе DWT (работает без прерываний)
-void DWT_Delay(float seconds)
-{
-    uint32_t start = DWT->CYCCNT;
-    // Количество циклов на микросекунду (для 400MHz: 400 циклов/мкс)
-    //#define MSCIN1SEC 1000000 //кол-во микросекунд в 1 секунде
-    //#define MSIN1SEC  1000    //кол-во милисекунд в 1 секунде
-    //uint32_t cycles = microseconds * (SystemCoreClock / MSCIN1SEC);
-    float period = 1.0F / SystemCoreClock;
-    uint32_t cycles = seconds / period;
-
-    while ((DWT->CYCCNT - start) < cycles) {
-        __NOP();
-    }
 }
 /* USER CODE END 4 */
 
