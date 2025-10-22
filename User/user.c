@@ -27,7 +27,12 @@ float get_stm_VDDA(ADC_HandleTypeDef *hadc){
     return res;
 }
 
-
+/*
+Счетчик DWT 32-битный, переполняется каждые ~21 секунду при 200 МГц
+Работает на частоте ядра процессора
+Не требует прерываний
+Очень высокая точность (1 такт процессора)
+*/
 void DWT_Init(void)
 {
     CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
@@ -51,7 +56,7 @@ void DWT_Delay(float seconds)
     }
 }
 
-void print_uart(const char *format, ...) {
+void print_user(const char *format, ...) {
   char buffer[128]; // Подберите размер под ваши нужды
   va_list args;
   
