@@ -1,5 +1,7 @@
 #include "user.h"
 
+#define printf print_user
+
 /*
 heap увеличивает адрес ,а стек уменьшает адрес 
 в STM heap и stack растут друк к другу навстречу
@@ -68,4 +70,32 @@ void print_user(const char *format, ...) {
     //CDC_Transmit_FS((uint8_t *)buffer, len);
     HAL_UART_Transmit(DEBUG_UART_OUT, (uint8_t *)buffer, len, 100);
   }
+}
+
+#define SDRAM_BASE_ADDR   0xD0000000
+#define TEST_SIZE         0x10  // 4KB для теста
+
+bool test_sdram_basic(void) {
+    volatile uint32_t* sdram = (uint32_t*)SDRAM_BASE_ADDR;
+    
+    printf("Testing SDRAM at 0x%08lX...\n", (uint32_t)sdram);
+    
+    // Тест записи
+    printf("Writing test pattern...\n");
+    for(uint32_t i = 0; i < TEST_SIZE / 4; i++) {
+        sdram[i] = 0x12345678 + i;  // Простой паттерн
+    }
+    
+    // Тест чтения
+    printf("Verifying data...\n");
+    for(uint32_t i = 0; i < TEST_SIZE / 4; i++) {
+        if(sdram[i] != (0x12345678 + i)) {
+            printf("SDRAM ERROR at 0x%08lX: wrote 0x%08lX, read 0x%08lX\n",
+                   (uint32_t)&sdram[i], (0x12345678 + i), sdram[i]);
+            return false;
+        }
+    }
+    
+    printf("SDRAM basic test PASSED!\n");
+    return true;
 }
