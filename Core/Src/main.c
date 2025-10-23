@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "user.h"
+#include "sdram.h"
 #ifdef __cplusplus
 extern "C" int __io_putchar(int ch);
 #else
@@ -173,7 +174,7 @@ ili9341_Init();
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  //test_sdram_basic();
+  test_sdram_basic();
   while (1)   
   {  
        //MPU6050_Process();
@@ -564,7 +565,7 @@ static void MX_FMC_Init(void)
   FMC_SDRAM_TimingTypeDef SdramTiming = {0};
 
   /* USER CODE BEGIN FMC_Init 1 */
-
+    /* Timing configuration for 90 Mhz of SD clock frequency (180Mhz/2) */
   /* USER CODE END FMC_Init 1 */
 
   /** Perform the SDRAM1 memory initialization sequence
