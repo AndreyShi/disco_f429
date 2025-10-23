@@ -177,7 +177,6 @@ ili9341_Init();
   /* USER CODE BEGIN WHILE */
   //test_sdram_basic();
   memset((void*)LCD_FRAME_ADDRESS_SDRAM, 255, LCD_BUFFER_SIZE);
-  *(uint16_t*)(LCD_FRAME_ADDRESS_SDRAM + 70000) = 0;
   while (1)   
   {  
        //MPU6050_Process();
@@ -642,11 +641,11 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(lcd_csx_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : button_Pin */
-  GPIO_InitStruct.Pin = button_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  /*Configure GPIO pin : INT_button_Pin */
+  GPIO_InitStruct.Pin = INT_button_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(button_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(INT_button_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : lcd_dcx_Pin */
   GPIO_InitStruct.Pin = lcd_dcx_Pin;
@@ -669,6 +668,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
 }
@@ -686,10 +689,7 @@ int __io_putchar(int ch)
   return ch;
 }
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-  dmpDataReady();
-}
+
 /* USER CODE END 4 */
 
 /**

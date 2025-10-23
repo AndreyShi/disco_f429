@@ -63,8 +63,9 @@ void Error_Handler(void);
 #define lcd_spi_mosi_GPIO_Port GPIOF
 #define lcd_csx_Pin GPIO_PIN_2
 #define lcd_csx_GPIO_Port GPIOC
-#define button_Pin GPIO_PIN_0
-#define button_GPIO_Port GPIOA
+#define INT_button_Pin GPIO_PIN_0
+#define INT_button_GPIO_Port GPIOA
+#define INT_button_EXTI_IRQn EXTI0_IRQn
 #define lcd_dcx_Pin GPIO_PIN_13
 #define lcd_dcx_GPIO_Port GPIOD
 #define rs485_DERE_Pin GPIO_PIN_2
