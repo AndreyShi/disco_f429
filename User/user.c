@@ -74,7 +74,12 @@ void print_user(const char *format, ...) {
 
 #define SDRAM_BASE_ADDR   0xD0000000
 #define TEST_SIZE         0x10  // 4KB для теста
-
+/**
+ * @brief чтение запись bank1 sdram адрес 0xD0000000
+ * 
+ * @return true - чтение запись прошла успешно
+ * @return false - чтение запись прошла с ошибками
+ */
 bool test_sdram_basic(void) {
     volatile uint32_t* sdram = (uint32_t*)SDRAM_BASE_ADDR;
     
