@@ -13,9 +13,6 @@ extern UART_HandleTypeDef huart1;
 
 #define printf print_user
 
-#define LCD_FRAME_ADDRESS_SDRAM      SDRAM_BASE_ADDR
-#define LCD_FRAME_ADDRESS_STATIC_RAM 0x2000A800
-
 #ifdef __cplusplus
 extern "C" {
 #endif

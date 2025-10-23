@@ -29,6 +29,7 @@
 #include <string.h>
 #include "user.h"
 #include "sdram.h"
+#include "lcd.h"
 #ifdef __cplusplus
 extern "C" int __io_putchar(int ch);
 #else
@@ -174,12 +175,14 @@ ili9341_Init();
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  test_sdram_basic();
+  //test_sdram_basic();
+  memset((void*)LCD_FRAME_ADDRESS_SDRAM, 255, LCD_BUFFER_SIZE);
+  *(uint16_t*)(LCD_FRAME_ADDRESS_SDRAM + 70000) = 0;
   while (1)   
   {  
        //MPU6050_Process();
     print_user("Stm intref: %.2f\n",get_stm_VDDA(&hadc1));
-    DWT_Delay(0.5);
+    DWT_Delay(1.5);
     //stack_check();
     /* USER CODE END WHILE */
 
