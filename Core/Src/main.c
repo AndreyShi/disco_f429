@@ -386,7 +386,7 @@ static void MX_LTDC_Init(void)
   pLayerCfg.Alpha0 = 0;
   pLayerCfg.BlendingFactor1 = LTDC_BLENDING_FACTOR1_CA;
   pLayerCfg.BlendingFactor2 = LTDC_BLENDING_FACTOR2_CA;
-  pLayerCfg.FBStartAdress = 0x2000A800;
+  pLayerCfg.FBStartAdress = 0xD0000000;
   pLayerCfg.ImageWidth = 240;
   pLayerCfg.ImageHeight = 320;
   pLayerCfg.Backcolor.Blue = 0;
@@ -444,7 +444,8 @@ static void MX_SPI5_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN SPI5_Init 2 */
-  SPI_HALtoBSP_bind(&hspi5);
+  //SPI_HALtoBSP_bind(&hspi5);
+  *Get_BSP_SPIHandle() = hspi5; 
   /* USER CODE END SPI5_Init 2 */
 
 }
@@ -597,7 +598,7 @@ static void MX_FMC_Init(void)
   }
 
   /* USER CODE BEGIN FMC_Init 2 */
-
+  user_SDRAM_Initialization_sequence(REFRESH_COUNT);
   /* USER CODE END FMC_Init 2 */
 }
 

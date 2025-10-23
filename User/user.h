@@ -3,14 +3,18 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-//information from datasheet DS9405 Rev 12 for STM32F427xx STM32F429xx
-//#define VREF_PLUS_CHARAC 3.3f
-//#define VREFINT_CAL_ADDR 0x1FFF7A2A
+#ifndef USER_H
+#define USER_H
+
+#include "sdram.h"
 
 extern UART_HandleTypeDef huart1;
 #define DEBUG_UART_OUT   &huart1
 
 #define printf print_user
+
+#define LCD_FRAME_ADDRESS_SDRAM      SDRAM_BASE_ADDR
+#define LCD_FRAME_ADDRESS_STATIC_RAM 0x2000A800
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,7 +31,6 @@ void print_user(const char *format, ...);
 }
 #endif
 
-
-
+#endif
 
 

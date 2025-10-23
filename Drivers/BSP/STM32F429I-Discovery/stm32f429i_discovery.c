@@ -619,6 +619,9 @@ static void I2Cx_Error(void)
 void SPI_HALtoBSP_bind(SPI_HandleTypeDef* hal_spi_handle){
   SpiHandle = *hal_spi_handle;
 }
+SPI_HandleTypeDef* Get_BSP_SPIHandle(void){
+  return &SpiHandle;
+}
 /**
   * @brief  SPIx Bus initialization
   */
