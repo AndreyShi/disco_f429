@@ -30,7 +30,7 @@ extern SDRAM_HandleTypeDef hsdram1;
 
 /**
  * @brief 
- * /* Set the refresh rate counter */
+ * Set the refresh rate counter 
 /* (15.62 us x Freq) - 20 */
 #define REFRESH_COUNT           ((uint32_t)1386)   /* SDRAM refresh counter */
 #define SDRAM_TIMEOUT           ((uint32_t)0xFFFF)

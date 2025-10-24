@@ -185,34 +185,6 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
-  static int buff[20];
-  extern int ifg;
-  static int i;
-  extern TIM_HandleTypeDef htim7;
-  extern uint32_t timer1ms;
-  extern uint32_t timer1s;
-  extern uint32_t timer1m;
-  timer1ms++;
-  if(timer1ms >= 1000)
-  {
-      timer1ms = 0;
-      timer1s++;
-      if(timer1s >= 60)
-      {
-        timer1s = 0;
-        timer1m++;
-        if(timer1m >= 60)
-        {
-          timer1m = 0;
-        }
-      }
-  }
-  if(ifg && i < 20)
-  {
-       buff[i++] = __HAL_TIM_GET_COUNTER(&htim7);
-  }
-  else
-      {__asm("nop");}
        
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
