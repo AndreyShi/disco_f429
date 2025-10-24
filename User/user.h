@@ -13,14 +13,13 @@ extern UART_HandleTypeDef huart1;
 
 #define printf print_terminal
 
+#define HARDFAULT __asm volatile (".short 0xde00")
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 void stack_check(void);
-#ifdef HAL_ADC_MODULE_ENABLED
-float get_stm_VDDA(ADC_HandleTypeDef *hadc);
-#endif
 void DWT_Init(void);
 void DWT_Delay(float seconds);
 void print_terminal(const char *format, ...);

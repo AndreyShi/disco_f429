@@ -12,24 +12,7 @@ void stack_check(void){
     HAL_Delay(1);
     stack_check();
 }
-#ifdef HAL_ADC_MODULE_ENABLED
-float get_stm_VDDA(ADC_HandleTypeDef *hadc){
 
-    int adc_data = 0;
-    float res = -1.0;
-
-    HAL_ADC_Start(hadc);
-    if(HAL_ADC_PollForConversion(hadc, 1000) == HAL_OK){
-        adc_data = (int)HAL_ADC_GetValue(hadc);
-
-        //VREFINT = (adc_data × VREF_PLUS_CHARAC) / 4095.0f 
-        //VDDA
-        res = (*((uint16_t*)VREFINT_CAL_ADDR) * (float)VREFINT_CAL_VREF/1000) / adc_data;
-        //printf("ADC value: %d adc vol: %.2f\n",adc_data, res );
-    }
-    return res;
-}
-#endif
 /*
 Счетчик DWT 32-битный, переполняется каждые ~21 секунду при 200 МГц
 Работает на частоте ядра процессора
@@ -70,5 +53,7 @@ void print_terminal(const char *format, ...) {
   if (len > 0) {
     //CDC_Transmit_FS((uint8_t *)buffer, len);
     HAL_UART_Transmit(DEBUG_UART_OUT, (uint8_t *)buffer, len, 100);
-  }
+  }else
+       { HARDFAULT; } 
+
 }
