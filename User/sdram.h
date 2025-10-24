@@ -7,6 +7,7 @@
 #include "user.h"
 
 #define SDRAM_BASE_ADDR   0xD0000000
+#define LCD_FRAME_ADDRESS_SDRAM      SDRAM_BASE_ADDR
 #define TEST_SIZE         0x10  // 4KB для теста
 
 extern SDRAM_HandleTypeDef hsdram1;

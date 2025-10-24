@@ -1,5 +1,6 @@
 #include "button.h"
-#include "lcd.h"
+#include "main.h"
+#include "sdram.h"
 
 int counter = 0;
 

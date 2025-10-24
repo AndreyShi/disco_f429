@@ -5,6 +5,9 @@
         "mpu6050.h": "c",
         "fonts.h": "c",
         "stm32f429i_discovery_lcd.h": "c",
-        "stm32f429i_discovery_sdram.h": "c"
+        "stm32f429i_discovery_sdram.h": "c",
+        "lcd.h": "c",
+        "sdram.h": "c",
+        "button.h": "c"
     }
 }
