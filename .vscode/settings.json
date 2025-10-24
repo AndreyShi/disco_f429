@@ -9,6 +9,7 @@
         "lcd.h": "c",
         "sdram.h": "c",
         "button.h": "c",
-        "cmsis_os2.h": "c"
+        "cmsis_os2.h": "c",
+        "freertos.h": "c"
     }
 }

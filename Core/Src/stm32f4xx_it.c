@@ -22,6 +22,7 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "user.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -91,7 +92,7 @@ void HardFault_Handler(void)
   while (1)
   {
     /* USER CODE BEGIN W1_HardFault_IRQn 0 */
-    DWT_Delay(1);
+    DWT_Delay(0.5);
     HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
     /* USER CODE END W1_HardFault_IRQn 0 */
   }

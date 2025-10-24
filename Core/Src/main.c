@@ -127,7 +127,7 @@ const osThreadAttr_t led_task_attributes = {
 };
 /* Definitions for adc_task */
 osThreadId_t adc_taskHandle;
-uint32_t adc_taskBuffer[ 128 ];
+uint32_t adc_taskBuffer[ 256 ];
 osStaticThreadDef_t adc_taskControlBlock;
 const osThreadAttr_t adc_task_attributes = {
   .name = "adc_task",

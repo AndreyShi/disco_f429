@@ -45,7 +45,7 @@ void DWT_Delay(float seconds)
 void print_terminal(const char *format, ...) {
   char buffer[128]; // Подберите размер под ваши нужды
   va_list args;
-  
+
   va_start(args, format);
   int len = vsnprintf(buffer, sizeof(buffer), format, args);
   va_end(args);

@@ -22,10 +22,9 @@ float get_stm_VDDA(ADC_HandleTypeDef *hadc){
 }
 
 void adc_task_func(void *argument){
-    float f = 1.45;
+
     while(1){
-        //print_terminal("Stm intref: %.2f\n",get_stm_VDDA(&hadc1));
-        print_terminal("Stm intref: %.2f\n",f);
+        print_terminal("Stm intref: %.2f\n",get_stm_VDDA(&hadc1));
         osDelay(1500);
     }
 }
