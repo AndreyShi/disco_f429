@@ -180,7 +180,7 @@ ili9341_Init();
   while (1)   
   {  
        //MPU6050_Process();
-    print_user("Stm intref: %.2f\n",get_stm_VDDA(&hadc1));
+    print_terminal("Stm intref: %.2f\n",get_stm_VDDA(&hadc1));
     DWT_Delay(1.5);
     //stack_check();
     /* USER CODE END WHILE */

@@ -1,4 +1,7 @@
 #include "user.h"
+#ifdef HAL_PCD_MODULE_ENABLED
+#include "usbd_cdc_if.h"
+#endif
 
 /*
 heap увеличивает адрес ,а стек уменьшает адрес 
@@ -9,7 +12,7 @@ void stack_check(void){
     HAL_Delay(1);
     stack_check();
 }
-
+#ifdef HAL_ADC_MODULE_ENABLED
 float get_stm_VDDA(ADC_HandleTypeDef *hadc){
 
     int adc_data = 0;
@@ -26,7 +29,7 @@ float get_stm_VDDA(ADC_HandleTypeDef *hadc){
     }
     return res;
 }
-
+#endif
 /*
 Счетчик DWT 32-битный, переполняется каждые ~21 секунду при 200 МГц
 Работает на частоте ядра процессора
@@ -56,7 +59,7 @@ void DWT_Delay(float seconds)
     }
 }
 
-void print_user(const char *format, ...) {
+void print_terminal(const char *format, ...) {
   char buffer[128]; // Подберите размер под ваши нужды
   va_list args;
   
