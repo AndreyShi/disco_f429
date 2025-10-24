@@ -16,5 +16,6 @@
 version: "2.1"
 options:
     Debug:
-        files:
-            Core/Src/main.c: -xc++ -std=c++11
+        files: {}
+    Release:
+        files: {}

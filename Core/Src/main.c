@@ -18,18 +18,19 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "cmsis_os.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
-#include "ili9341.h"
-#include "stm32f429i_discovery.h"
-#include "stm32f429i_discovery_lcd.h"
 #include <stdlib.h>
 #include <string.h>
 #include "user.h"
 #include "sdram.h"
 #include "lcd.h"
+#include "ili9341.h"
+#include "stm32f429i_discovery.h"
+#include "stm32f429i_discovery_lcd.h"
 #ifdef __cplusplus
 extern "C" int __io_putchar(int ch);
 #else
@@ -45,6 +46,7 @@ uint8_t uart_Data[UART_RX_BUFFER_SZ];
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
+typedef StaticTask_t osStaticThreadDef_t;
 /* USER CODE BEGIN PTD */
 
 /* USER CODE END PTD */
@@ -75,6 +77,66 @@ UART_HandleTypeDef huart1;
 
 SDRAM_HandleTypeDef hsdram1;
 
+/* Definitions for defaultTask */
+osThreadId_t defaultTaskHandle;
+uint32_t defaultTaskBuffer[ 128 ];
+osStaticThreadDef_t defaultTaskControlBlock;
+const osThreadAttr_t defaultTask_attributes = {
+  .name = "defaultTask",
+  .cb_mem = &defaultTaskControlBlock,
+  .cb_size = sizeof(defaultTaskControlBlock),
+  .stack_mem = &defaultTaskBuffer[0],
+  .stack_size = sizeof(defaultTaskBuffer),
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for lcd_task */
+osThreadId_t lcd_taskHandle;
+uint32_t lcd_taskBuffer[ 128 ];
+osStaticThreadDef_t lcd_taskControlBlock;
+const osThreadAttr_t lcd_task_attributes = {
+  .name = "lcd_task",
+  .cb_mem = &lcd_taskControlBlock,
+  .cb_size = sizeof(lcd_taskControlBlock),
+  .stack_mem = &lcd_taskBuffer[0],
+  .stack_size = sizeof(lcd_taskBuffer),
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for button_task */
+osThreadId_t button_taskHandle;
+uint32_t button_taskBuffer[ 128 ];
+osStaticThreadDef_t button_taskControlBlock;
+const osThreadAttr_t button_task_attributes = {
+  .name = "button_task",
+  .cb_mem = &button_taskControlBlock,
+  .cb_size = sizeof(button_taskControlBlock),
+  .stack_mem = &button_taskBuffer[0],
+  .stack_size = sizeof(button_taskBuffer),
+  .priority = (osPriority_t) osPriorityHigh,
+};
+/* Definitions for led_task */
+osThreadId_t led_taskHandle;
+uint32_t led_taskBuffer[ 128 ];
+osStaticThreadDef_t led_taskControlBlock;
+const osThreadAttr_t led_task_attributes = {
+  .name = "led_task",
+  .cb_mem = &led_taskControlBlock,
+  .cb_size = sizeof(led_taskControlBlock),
+  .stack_mem = &led_taskBuffer[0],
+  .stack_size = sizeof(led_taskBuffer),
+  .priority = (osPriority_t) osPriorityHigh,
+};
+/* Definitions for adc_task */
+osThreadId_t adc_taskHandle;
+uint32_t adc_taskBuffer[ 128 ];
+osStaticThreadDef_t adc_taskControlBlock;
+const osThreadAttr_t adc_task_attributes = {
+  .name = "adc_task",
+  .cb_mem = &adc_taskControlBlock,
+  .cb_size = sizeof(adc_taskControlBlock),
+  .stack_mem = &adc_taskBuffer[0],
+  .stack_size = sizeof(adc_taskBuffer),
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -90,6 +152,12 @@ static void MX_UART5_Init(void);
 static void MX_FMC_Init(void);
 static void MX_LTDC_Init(void);
 static void MX_I2C3_Init(void);
+void StartDefaultTask(void *argument);
+extern void lcd_task_func(void *argument);
+extern void button_task_func(void *argument);
+extern void led_task_func(void *argument);
+extern void adc_task_func(void *argument);
+
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -106,8 +174,7 @@ static void MX_I2C3_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-__disable_irq();
-__enable_irq();
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -137,52 +204,62 @@ __enable_irq();
   MX_LTDC_Init();
   MX_I2C3_Init();
   /* USER CODE BEGIN 2 */
-  //MPU6050_Initialize();
-#ifndef LCD_SPI
-  ili9341_Init_direct();
-  int rotation = 4;
-  while(1){
-    for (rotation = 0; rotation < 4; rotation++){
-      ILI9341_SetRotation(rotation);
-      uint16_t colors[] = {0x0000,0xF800, 0x07E0, 0x001F, 0xFFFF}; // Black, R,G,B,W
-      ILI9341_FillScreen(colors[rotation]);
-      HAL_Delay(2000);
-    }
-  } 
-#endif
-#ifdef LCD_TRAINING
-ili9341_Init();
-#endif
-#ifndef LCD_BSP_EXAMPLE
-    /* Initialize the LCD */
-  BSP_LCD_Init();
-  /* Initialize the LCD Layers */
-  BSP_LCD_LayerDefaultInit(1, LCD_FRAME_BUFFER);
-    /* Set LCD Foreground Layer  */
-  BSP_LCD_SelectLayer(1);
-  BSP_LCD_SetFont(&LCD_DEFAULT_FONT);
-  /* Clear the LCD */ 
-  BSP_LCD_SetBackColor(LCD_COLOR_WHITE); 
-  BSP_LCD_Clear(LCD_COLOR_WHITE);
-  /* Set the LCD Text Color */
-  BSP_LCD_SetTextColor(LCD_COLOR_DARKBLUE);  
-  /* Display LCD messages */
-  BSP_LCD_DisplayStringAt(0, 10, (uint8_t*)"STM32F429I BSP", CENTER_MODE);
-  BSP_LCD_SetFont(&Font16);
-  BSP_LCD_DisplayStringAt(0, 35, (uint8_t*)"Drivers examples", CENTER_MODE);
-#endif
+
   /* USER CODE END 2 */
 
+  /* Init scheduler */
+  osKernelInitialize();
+
+  /* USER CODE BEGIN RTOS_MUTEX */
+  /* add mutexes, ... */
+  /* USER CODE END RTOS_MUTEX */
+
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
+  /* add semaphores, ... */
+  /* USER CODE END RTOS_SEMAPHORES */
+
+  /* USER CODE BEGIN RTOS_TIMERS */
+  /* start timers, add new ones, ... */
+  /* USER CODE END RTOS_TIMERS */
+
+  /* USER CODE BEGIN RTOS_QUEUES */
+  /* add queues, ... */
+  /* USER CODE END RTOS_QUEUES */
+
+  /* Create the thread(s) */
+  /* creation of defaultTask */
+  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+
+  /* creation of lcd_task */
+  lcd_taskHandle = osThreadNew(lcd_task_func, NULL, &lcd_task_attributes);
+
+  /* creation of button_task */
+  button_taskHandle = osThreadNew(button_task_func, NULL, &button_task_attributes);
+
+  /* creation of led_task */
+  led_taskHandle = osThreadNew(led_task_func, NULL, &led_task_attributes);
+
+  /* creation of adc_task */
+  adc_taskHandle = osThreadNew(adc_task_func, NULL, &adc_task_attributes);
+
+  /* USER CODE BEGIN RTOS_THREADS */
+  /* add threads, ... */
+  /* USER CODE END RTOS_THREADS */
+
+  /* USER CODE BEGIN RTOS_EVENTS */
+  /* add events, ... */
+  /* USER CODE END RTOS_EVENTS */
+
+  /* Start scheduler */
+  osKernelStart();
+
+  /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  //test_sdram_basic();
-  memset((void*)LCD_FRAME_ADDRESS_SDRAM, 255, LCD_BUFFER_SIZE);
+
   while (1)   
   {  
-       //MPU6050_Process();
-    print_terminal("Stm intref: %.2f\n",get_stm_VDDA(&hadc1));
-    DWT_Delay(1.5);
-    //stack_check();
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -643,7 +720,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : INT_button_Pin */
   GPIO_InitStruct.Pin = INT_button_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(INT_button_GPIO_Port, &GPIO_InitStruct);
 
@@ -669,7 +746,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
@@ -691,6 +768,45 @@ int __io_putchar(int ch)
 
 
 /* USER CODE END 4 */
+
+/* USER CODE BEGIN Header_StartDefaultTask */
+/**
+  * @brief  Function implementing the defaultTask thread.
+  * @param  argument: Not used
+  * @retval None
+  */
+/* USER CODE END Header_StartDefaultTask */
+void StartDefaultTask(void *argument)
+{
+  /* USER CODE BEGIN 5 */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END 5 */
+}
+
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM2 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM2) {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
+}
 
 /**
   * @brief  This function is executed in case of error occurrence.
