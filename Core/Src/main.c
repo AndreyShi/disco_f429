@@ -91,7 +91,7 @@ const osThreadAttr_t defaultTask_attributes = {
 };
 /* Definitions for lcd_task */
 osThreadId_t lcd_taskHandle;
-uint32_t lcd_taskBuffer[ 128 ];
+uint32_t lcd_taskBuffer[ 1024 ];
 osStaticThreadDef_t lcd_taskControlBlock;
 const osThreadAttr_t lcd_task_attributes = {
   .name = "lcd_task",

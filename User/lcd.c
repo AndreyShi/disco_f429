@@ -5,6 +5,8 @@
 #include "ili9341.h"
 #include "stm32f429i_discovery.h"
 #include "stm32f429i_discovery_lcd.h"
+#include "../Component/ssd1306.h"
+#include "../Component/ssd1306.c"
 
 void lcd_task_func(void *argument){
     #ifdef LCD_SPI
@@ -42,10 +44,13 @@ void lcd_task_func(void *argument){
     #endif
     
     memset((void*)LCD_FRAME_ADDRESS_SDRAM, 255, LCD_BUFFER_SIZE);
-    char color = 0;
+    signed char color = 0;
+    Convert_to_565Colors(&oled,(void*)LCD_FRAME_ADDRESS_SDRAM);
     while(1){
         color++;
-        osDelay(1000);
-        memset((void*)LCD_FRAME_ADDRESS_SDRAM, color, LCD_BUFFER_SIZE);
+        osDelay(100);
+        OLED_WriteString(0, &oled, 1, 5, "Hello: %4d", color);
+        Convert_to_565Colors(&oled,(void*)LCD_FRAME_ADDRESS_SDRAM);
+        //memset((void*)LCD_FRAME_ADDRESS_SDRAM, color, LCD_BUFFER_SIZE);
     }
 }

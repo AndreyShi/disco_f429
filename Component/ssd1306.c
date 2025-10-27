@@ -317,3 +317,50 @@ void OLED_InvertColors(OLED_HandleTypeDef *oled, uint8_t invert) {
         OLED_WriteCommand(oled, 0xA6); // Normal display
     }
 }
+
+void Convert_to_565Colors(OLED_HandleTypeDef* oled, void* lcd_mem){
+    uint16_t* lcd_buffer = (uint16_t*)lcd_mem;
+    uint8_t* mono_buffer = (uint8_t*)&oled->buffer;
+    
+    
+    // Центрируем изображение 32x128 на экране 240x320
+    int offset_x = (240 - 32) / 2; //
+    int offset_y = (320 - 128) / 2;  //
+    
+    // Копируем монохромное изображение в центр LCD
+    for (int y = 0; y < 32; y++) {
+        __asm("nop");
+        for (int x = 0; x < 128; x++) {
+            // Получаем значение пикселя из монохромного буфера
+            int byte_index = x + (y / 8) * 128;
+            int bit_index = y % 8;
+            int pixel_value = (mono_buffer[byte_index] >> bit_index) & 0x01;
+
+            // ПОВОРОТ на 90° против часовой стрелке:
+            // Новая X = старая Y
+            // Новая Y = 127 - старая X
+            int rotated_x = 31 - y;      // 0-31
+            int rotated_y = x;           // 0-127  
+
+            // ПОВОРОТ на 90° по часовой стрелке:
+            //int rotated_x = y;         //(бывшая высота становится шириной)
+            //int rotated_y = 127 - x;    // (бывшая ширина становится высотой, перевернутой)
+
+            // Поворот на 180°
+            //int rotated_x = 127 - x;     // 0-127  
+            //int rotated_y = 31 - y;      // 0-31
+
+            // Поворот на 270° (эквивалентно 90° против часовой)
+            //int rotated_x = 31 - y;      // 0-31
+            //int rotated_y = x;           // 0-127
+            
+            // Устанавливаем цвет на LCD
+            int lcd_x = rotated_x + offset_x;
+            int lcd_y = rotated_y + offset_y;
+            
+            if (lcd_x < 240 && lcd_y < 320) {
+                lcd_buffer[lcd_y * 240 + lcd_x] = pixel_value ? 0xFFFF : 0x0000;
+            }
+        }
+    }
+}
