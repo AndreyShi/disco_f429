@@ -1,8 +1,11 @@
+#include "FreeRTOS.h"
 #include "cmsis_os2.h"
+#include "queue.h"
 #include "main.h"
 #include "user.h"
 
 extern ADC_HandleTypeDef hadc1;
+extern osMessageQueueId_t adc_queueHandle;
 
 float get_stm_VDDA(ADC_HandleTypeDef *hadc){
 
@@ -24,7 +27,9 @@ float get_stm_VDDA(ADC_HandleTypeDef *hadc){
 void adc_task_func(void *argument){
 
     while(1){
-        print_terminal("Stm intref: %.2f\n",get_stm_VDDA(&hadc1));
+        float result = get_stm_VDDA(&hadc1);
+        print_terminal("Stm intref: %.2f\n",result);
+        xQueueSend(adc_queueHandle, &result, 0);
         osDelay(1500);
     }
 }

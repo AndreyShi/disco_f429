@@ -1,4 +1,6 @@
-#include "cmsis_os.h"
+#include "FreeRTOS.h"
+#include "cmsis_os2.h"
+#include "queue.h"
 #include "sdram.h"
 #include "lcd.h"
 #include <string.h>
@@ -7,6 +9,8 @@
 #include "stm32f429i_discovery_lcd.h"
 #include "../Component/ssd1306.h"
 #include "../Component/ssd1306.c"
+
+extern osMessageQueueId_t adc_queueHandle;
 
 void init_lcd(void){
     return;
@@ -63,10 +67,13 @@ void lcd_task_func(void *argument){
     
     memset((void*)LCD_FRAME_ADDRESS_SDRAM, 255, LCD_BUFFER_SIZE);
     signed char color = 0;
+    float result = 0.0F;
     while(1){
         color++;
         osDelay(10);
         print_lcd(0, 0, "Hello: %4d", color);
+        xQueueReceive(adc_queueHandle, &result, 0);
+        print_lcd(0, 1, "stm vdda: %.2f", result);
         upd_lcd();
         //memset((void*)LCD_FRAME_ADDRESS_SDRAM, color, LCD_BUFFER_SIZE);
     }

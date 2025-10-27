@@ -47,6 +47,7 @@ uint8_t uart_Data[UART_RX_BUFFER_SZ];
 
 /* Private typedef -----------------------------------------------------------*/
 typedef StaticTask_t osStaticThreadDef_t;
+typedef StaticQueue_t osStaticMessageQDef_t;
 /* USER CODE BEGIN PTD */
 
 /* USER CODE END PTD */
@@ -137,6 +138,17 @@ const osThreadAttr_t adc_task_attributes = {
   .stack_size = sizeof(adc_taskBuffer),
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for adc_queue */
+osMessageQueueId_t adc_queueHandle;
+uint8_t adc_queueBuffer[ 1 * sizeof( float ) ];
+osStaticMessageQDef_t adc_queueControlBlock;
+const osMessageQueueAttr_t adc_queue_attributes = {
+  .name = "adc_queue",
+  .cb_mem = &adc_queueControlBlock,
+  .cb_size = sizeof(adc_queueControlBlock),
+  .mq_mem = &adc_queueBuffer,
+  .mq_size = sizeof(adc_queueBuffer)
+};
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -221,6 +233,10 @@ int main(void)
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
+
+  /* Create the queue(s) */
+  /* creation of adc_queue */
+  adc_queueHandle = osMessageQueueNew (1, sizeof(float), &adc_queue_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
