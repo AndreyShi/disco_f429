@@ -15,8 +15,10 @@
 #define OLED_DATA 0x40
 
 // Размеры дисплея
-#define OLED_WIDTH 128
-#define OLED_HEIGHT 32
+//#define OLED_WIDTH  128
+//#define OLED_HEIGHT  32
+#define OLED_WIDTH  320
+#define OLED_HEIGHT 240
 #define FONT_WIDTH 5
 #define FONT_HEIGHT 7
 
@@ -53,6 +55,8 @@ void OLED_WriteChar(OLED_HandleTypeDef *oled, char ch);
 
 // Вывод строки
 void OLED_WriteString(uint8_t update_src, OLED_HandleTypeDef *oled, uint8_t row, uint8_t col, char *str, ...);
+
+void OLED_WriteString_light(uint8_t update_src, OLED_HandleTypeDef *oled, uint8_t row, uint8_t col, char *str);
 
 // Перевернуть экран по горизонтали
 void OLED_FlipHorizontal(OLED_HandleTypeDef *oled, uint8_t flip);

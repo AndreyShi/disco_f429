@@ -324,22 +324,22 @@ void Convert_to_565Colors(OLED_HandleTypeDef* oled, void* lcd_mem){
     
     
     // Центрируем изображение 32x128 на экране 240x320
-    int offset_x = (240 - 32) / 2; //
-    int offset_y = (320 - 128) / 2;  //
+    int offset_x = (240 - OLED_HEIGHT) / 2; //
+    int offset_y = (320 - OLED_WIDTH) / 2;  //
     
     // Копируем монохромное изображение в центр LCD
-    for (int y = 0; y < 32; y++) {
+    for (int y = 0; y < OLED_HEIGHT; y++) {
         __asm("nop");
-        for (int x = 0; x < 128; x++) {
+        for (int x = 0; x < OLED_WIDTH; x++) {
             // Получаем значение пикселя из монохромного буфера
-            int byte_index = x + (y / 8) * 128;
+            int byte_index = x + (y / 8) * OLED_WIDTH;
             int bit_index = y % 8;
             int pixel_value = (mono_buffer[byte_index] >> bit_index) & 0x01;
 
             // ПОВОРОТ на 90° против часовой стрелке:
             // Новая X = старая Y
             // Новая Y = 127 - старая X
-            int rotated_x = 31 - y;      // 0-31
+            int rotated_x = OLED_HEIGHT - 1 - y;      // 0-31
             int rotated_y = x;           // 0-127  
 
             // ПОВОРОТ на 90° по часовой стрелке:
@@ -359,7 +359,7 @@ void Convert_to_565Colors(OLED_HandleTypeDef* oled, void* lcd_mem){
             int lcd_y = rotated_y + offset_y;
             
             if (lcd_x < 240 && lcd_y < 320) {
-                lcd_buffer[lcd_y * 240 + lcd_x] = pixel_value ? 0xFFFF : 0x0000;
+                lcd_buffer[lcd_y * 240 + lcd_x] = pixel_value ? 0x0000 : 0xFFFF;
             }
         }
     }

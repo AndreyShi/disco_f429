@@ -8,6 +8,24 @@
 #include "../Component/ssd1306.h"
 #include "../Component/ssd1306.c"
 
+void init_lcd(void){
+    return;
+}
+void print_lcd(int x, int y, const char *format, ...){
+    char buff[50] = {0};
+
+    va_list args;
+    va_start(args, format);
+    vsnprintf(buff, sizeof(buff), format, args);
+    va_end(args);
+
+    OLED_WriteString_light(0, &oled, y, x, buff);
+}
+
+void upd_lcd(void){
+    Convert_to_565Colors(&oled,(void*)LCD_FRAME_ADDRESS_SDRAM);
+}
+
 void lcd_task_func(void *argument){
     #ifdef LCD_SPI
     ili9341_Init_direct();
@@ -45,12 +63,11 @@ void lcd_task_func(void *argument){
     
     memset((void*)LCD_FRAME_ADDRESS_SDRAM, 255, LCD_BUFFER_SIZE);
     signed char color = 0;
-    Convert_to_565Colors(&oled,(void*)LCD_FRAME_ADDRESS_SDRAM);
     while(1){
         color++;
-        osDelay(100);
-        OLED_WriteString(0, &oled, 1, 5, "Hello: %4d", color);
-        Convert_to_565Colors(&oled,(void*)LCD_FRAME_ADDRESS_SDRAM);
+        osDelay(10);
+        print_lcd(0, 0, "Hello: %4d", color);
+        upd_lcd();
         //memset((void*)LCD_FRAME_ADDRESS_SDRAM, color, LCD_BUFFER_SIZE);
     }
 }

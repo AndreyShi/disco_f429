@@ -12,15 +12,6 @@ extern "C" {
 #define LCD_COLOR888 24
 #define LCD_BUFFER_SIZE (320 * 240 * LCD_COLOR565 / 8)
 
-typedef struct {
-    void*   buf;
-    uint8_t w;   //ширина
-    uint8_t h;   //высота
-    uint8_t bit; //цвет дисплея, 1 bit, 16 bit
-    uint8_t currentX;
-    uint8_t currentY;
-} lcd_buffer_t;
-
 /*
 размер lcd buffera в байтах:
 128 *  32 *  1bit(monochrome) / 8bit = 512    bytes
