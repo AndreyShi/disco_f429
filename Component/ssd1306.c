@@ -89,22 +89,22 @@ void OLED_UpdateScreen(OLED_HandleTypeDef *oled) {
 }
 
 // Установка позиции курсора
-void OLED_SetCursor(OLED_HandleTypeDef *oled, uint8_t x, uint8_t y) {
+void OLED_SetCursor(OLED_HandleTypeDef *oled, uint16_t x, uint16_t y) {
     oled->currentX = x;
     oled->currentY = y;
 }
 
 // Очистка области под символ
-void OLED_ClearCharArea(OLED_HandleTypeDef *oled, uint8_t x, uint8_t y) {
+void OLED_ClearCharArea(OLED_HandleTypeDef *oled, uint16_t x, uint16_t y) {
     // Очищаем область 7x8 пикселей (5x7 символ + отступы)
     for (uint8_t i = 0; i < 7; i++) {
-        uint8_t col = x + i;
+        uint32_t col = x + i;
         if (col >= OLED_WIDTH) continue;
         
         for (uint8_t row = 0; row < 8; row++) {
-            uint8_t page = (y + row) / 8;
-            uint8_t bit_pos = (y + row) % 8;
-            uint16_t buffer_index = col + (page * OLED_WIDTH);
+            uint32_t page = (y + row) / 8;
+            uint32_t bit_pos = (y + row) % 8;
+            uint32_t buffer_index = col + (page * OLED_WIDTH);
             
             if (buffer_index < sizeof(oled->buffer)) {
                 oled->buffer[buffer_index] &= ~(1 << bit_pos); // Очищаем бит
@@ -227,17 +227,17 @@ void OLED_WriteChar(OLED_HandleTypeDef *oled, char ch) {
     
     // Рисуем символ в буфере
     for (uint8_t i = 0; i < 5; i++) {
-        uint8_t x = oled->currentX + i;
+        uint16_t x = oled->currentX + i;
         if (x >= OLED_WIDTH) continue;
         
-        uint8_t y = oled->currentY;
+        uint16_t y = oled->currentY;
         if (y >= OLED_HEIGHT) continue;
         
         // Рисуем каждый бит символа
         uint8_t fontByte = charData[i];
         for (uint8_t bit = 0; bit < 7; bit++) {
             if (fontByte & (1 << bit)) {
-                uint16_t pos = x + ((y + bit) / 8) * OLED_WIDTH;
+                uint32_t pos = x + ((y + bit) / 8) * OLED_WIDTH;
                 oled->buffer[pos] |= (1 << ((y + bit) % 8));
             }
         }
@@ -257,7 +257,7 @@ void OLED_WriteChar(OLED_HandleTypeDef *oled, char ch) {
 }
 
 // Вывод строки
-void OLED_WriteString(uint8_t update_src, OLED_HandleTypeDef *oled, uint8_t row, uint8_t col, char *str, ...) {
+void OLED_WriteString(uint8_t update_src, OLED_HandleTypeDef *oled, uint16_t row, uint16_t col, char *str, ...) {
 
     OLED_SetTextCursor(oled, row, col);
 
@@ -276,7 +276,7 @@ void OLED_WriteString(uint8_t update_src, OLED_HandleTypeDef *oled, uint8_t row,
 }
 
 // Вывод строки
-void OLED_WriteString_light(uint8_t update_src, OLED_HandleTypeDef *oled, uint8_t row, uint8_t col, char *str) {
+void OLED_WriteString_light(uint8_t update_src, OLED_HandleTypeDef *oled, uint16_t row, uint16_t col, char *str) {
 
     OLED_SetTextCursor(oled, row, col);
     int i = 0;
@@ -304,7 +304,7 @@ void OLED_FlipVertical(OLED_HandleTypeDef *oled, uint8_t flip) {
 }
 
 // Установка позиции текста (строка 0-3, столбец 0-25)
-void OLED_SetTextCursor(OLED_HandleTypeDef *oled, uint8_t row, uint8_t col) {
+void OLED_SetTextCursor(OLED_HandleTypeDef *oled, uint16_t row, uint16_t col) {
     oled->currentX = col * (FONT_WIDTH + 1);
     oled->currentY = row * 8; // 8 пикселей на строку
 }

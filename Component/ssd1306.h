@@ -26,8 +26,8 @@
 typedef struct {
     I2C_HandleTypeDef *hi2c;
     uint8_t buffer[OLED_WIDTH * OLED_HEIGHT / 8];
-    uint8_t currentX;
-    uint8_t currentY;
+    uint16_t currentX;
+    uint16_t currentY;
 } OLED_HandleTypeDef;
 
 extern OLED_HandleTypeDef oled;
@@ -46,17 +46,17 @@ void OLED_Clear(OLED_HandleTypeDef *oled);
 void OLED_UpdateScreen(OLED_HandleTypeDef *oled);
 
 // Установка позиции курсора
-void OLED_SetCursor(OLED_HandleTypeDef *oled, uint8_t x, uint8_t y);
+void OLED_SetCursor(OLED_HandleTypeDef *oled, uint16_t x, uint16_t y);
 
-void OLED_ClearCharArea(OLED_HandleTypeDef *oled, uint8_t x, uint8_t y);
+void OLED_ClearCharArea(OLED_HandleTypeDef *oled, uint16_t x, uint16_t y);
 
 // Простой вывод символа (базовый шрифт 5x7)
 void OLED_WriteChar(OLED_HandleTypeDef *oled, char ch);
 
 // Вывод строки
-void OLED_WriteString(uint8_t update_src, OLED_HandleTypeDef *oled, uint8_t row, uint8_t col, char *str, ...);
+void OLED_WriteString(uint8_t update_src, OLED_HandleTypeDef *oled, uint16_t row, uint16_t col, char *str, ...);
 
-void OLED_WriteString_light(uint8_t update_src, OLED_HandleTypeDef *oled, uint8_t row, uint8_t col, char *str);
+void OLED_WriteString_light(uint8_t update_src, OLED_HandleTypeDef *oled, uint16_t row, uint16_t col, char *str);
 
 // Перевернуть экран по горизонтали
 void OLED_FlipHorizontal(OLED_HandleTypeDef *oled, uint8_t flip);
@@ -65,7 +65,7 @@ void OLED_FlipHorizontal(OLED_HandleTypeDef *oled, uint8_t flip);
 void OLED_FlipVertical(OLED_HandleTypeDef *oled, uint8_t flip);
 
 // Установка позиции текста (строка 0-3, столбец 0-25)
-void OLED_SetTextCursor(OLED_HandleTypeDef *oled, uint8_t row, uint8_t col);
+void OLED_SetTextCursor(OLED_HandleTypeDef *oled, uint16_t row, uint16_t col);
 
 // Инвертировать цвета дисплея
 void OLED_InvertColors(OLED_HandleTypeDef *oled, uint8_t invert);

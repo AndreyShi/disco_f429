@@ -9,6 +9,7 @@
 #include "stm32f429i_discovery_lcd.h"
 #include "../Component/ssd1306.h"
 #include "../Component/ssd1306.c"
+#include <math.h>
 
 extern osMessageQueueId_t adc_queueHandle;
 
@@ -74,6 +75,10 @@ void lcd_task_func(void *argument){
         print_lcd(0, 0, "Hello: %4d", color);
         xQueueReceive(adc_queueHandle, &result, 0);
         print_lcd(0, 1, "stm vdda: %.2f", result);
+        print_lcd(0, 2, "0123456789012345678901234567890123456789012a", result);
+        //print_lcd(0, 2, "0123456789012345678901234567890ab", result);
+        print_lcd(1, 3, " ", result);
+        print_lcd(0, 4, "%.25f", acos(-1.0));
         upd_lcd();
         //memset((void*)LCD_FRAME_ADDRESS_SDRAM, color, LCD_BUFFER_SIZE);
     }

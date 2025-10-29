@@ -11,6 +11,7 @@
         "button.h": "c",
         "cmsis_os2.h": "c",
         "freertos.h": "c",
-        "type_traits": "c"
+        "type_traits": "c",
+        "math.h": "c"
     }
 }
