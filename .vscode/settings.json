@@ -12,6 +12,10 @@
         "cmsis_os2.h": "c",
         "freertos.h": "c",
         "type_traits": "c",
-        "math.h": "c"
+        "math.h": "c",
+        "mb.h": "c",
+        "mbport.h": "c",
+        "port_internal.h": "c",
+        "port.h": "c"
     }
 }

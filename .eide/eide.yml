@@ -36,6 +36,11 @@ targets:
         - Drivers/BSP/Components/ili9341
         - Drivers/BSP/STM32F429I-Discovery
         - User
+        - freemodbus/modbus/include
+        - freemodbus/modbus/rtu
+        - freemodbus/modbus/ascii
+        - freemodbus/modbus/tcp
+        - freemodbus/demo/STM32_CMAKE/port
       libList: []
     excludeList: []
     toolchain: GCC

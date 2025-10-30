@@ -10,6 +10,8 @@
   #include "stm32g4xx_hal.h"
 #elif defined(STM32F1xx)
   #include "stm32f1xx_hal.h"
+#elif defined(STM32F429xx)
+  #include "stm32f4xx_hal.h"
 /* Add other STM32 families as needed */
 #else
   #error "No STM32 device family defined!"
