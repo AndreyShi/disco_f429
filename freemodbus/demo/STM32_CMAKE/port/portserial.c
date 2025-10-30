@@ -26,7 +26,7 @@ UART_HandleTypeDef          uart_mb;
 */
 
 
-BOOL xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity eParity )
+BOOL xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity eParity, UCHAR ucStopBits  )
 {
     UNUSED( ucPORT );
 
@@ -56,7 +56,9 @@ BOOL xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBPar
     {
         if( eParity == MB_PAR_NONE )
         {
+#if !defined(STM32F429xx) 
             uart_mb.Init.WordLength = UART_WORDLENGTH_7B;
+#endif
             uart_mb.Init.Parity     = UART_PARITY_NONE;
         }
         else
@@ -118,6 +120,52 @@ void vMBPortSerialEnable(BOOL rxEnable, BOOL txEnable)
         HAL_NVIC_EnableIRQ(MB_USART_IRQn);
 }
 
+#if defined(STM32F429xx)
+
+BOOL xMBPortSerialPutByte(CHAR byte)
+{
+    //MB_USART->TDR = byte;
+    //HAL_UART_Transmit(MB_USART, (uint8_t*)&byte, 1, HAL_MAX_DELAY);
+    MB_USART->DR = byte;
+    return TRUE;
+}
+
+BOOL xMBPortSerialGetByte(CHAR *byte)
+{
+    //*byte = MB_USART->RDR;
+    //if (HAL_UART_Receive(MB_USART, (uint8_t*)byte, 1, 0) == HAL_OK)
+    //    { return TRUE;}
+    //return FALSE;
+    *byte = MB_USART->DR;
+    return TRUE;
+}
+
+void MB_USART_IRQHandler(void)
+{
+    uint32_t isr = MB_USART->SR;
+    uint32_t cr1 = MB_USART->CR1;
+
+    // Check for receive interrupt
+    if( (isr & USART_SR_RXNE) && (cr1 & USART_CR1_RXNEIE) )
+    {
+        vMBTimerDebugSetLow();
+        pxMBFrameCBByteReceived();
+    }
+
+    // Check for transmit interrupt
+    if( (isr & USART_SR_TXE) && (cr1 & USART_CR1_TXEIE) )
+    {
+        pxMBFrameCBTransmitterEmpty();
+    }
+    
+    // Clear error flags - use USART_ICR_NECF instead of USART_ICR_NCF
+    MB_USART->SR &= ~(USART_SR_PE | USART_SR_FE | USART_SR_NE | USART_SR_ORE | USART_SR_LBD);
+                    
+    // Do NOT call HAL_UART_IRQHandler here as it will interfere with our direct register access
+}
+
+#elif
+
 BOOL xMBPortSerialPutByte(CHAR byte)
 {
     MB_USART->TDR = byte;
@@ -154,6 +202,6 @@ void MB_USART_IRQHandler(void)
                     
     // Do NOT call HAL_UART_IRQHandler here as it will interfere with our direct register access
 }
-
+#endif
 /* ----------------------- End of file --------------------------------------*/
 

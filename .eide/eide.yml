@@ -8,9 +8,14 @@ srcDirs:
   - Middlewares
   - Drivers
   - User
+  - freemodbus/modbus/functions
+  - freemodbus/modbus/rtu
+  - freemodbus/modbus/ascii
+  - freemodbus/demo/STM32_CMAKE/port
 virtualFolder:
   name: <virtual_root>
-  files: []
+  files:
+    - path: freemodbus/modbus/mb.c
   folders: []
 dependenceList: []
 outDir: build
