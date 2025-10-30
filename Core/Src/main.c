@@ -138,6 +138,18 @@ const osThreadAttr_t adc_task_attributes = {
   .stack_size = sizeof(adc_taskBuffer),
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for modbus_task */
+osThreadId_t modbus_taskHandle;
+uint32_t modbus_taskBuffer[ 128 ];
+osStaticThreadDef_t modbus_taskControlBlock;
+const osThreadAttr_t modbus_task_attributes = {
+  .name = "modbus_task",
+  .cb_mem = &modbus_taskControlBlock,
+  .cb_size = sizeof(modbus_taskControlBlock),
+  .stack_mem = &modbus_taskBuffer[0],
+  .stack_size = sizeof(modbus_taskBuffer),
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* Definitions for adc_queue */
 osMessageQueueId_t adc_queueHandle;
 uint8_t adc_queueBuffer[ 1 * sizeof( float ) ];
@@ -169,6 +181,7 @@ extern void lcd_task_func(void *argument);
 extern void button_task_func(void *argument);
 extern void led_task_func(void *argument);
 extern void adc_task_func(void *argument);
+extern void modbus_task_func(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -257,6 +270,9 @@ int main(void)
 
   /* creation of adc_task */
   adc_taskHandle = osThreadNew(adc_task_func, NULL, &adc_task_attributes);
+
+  /* creation of modbus_task */
+  modbus_taskHandle = osThreadNew(modbus_task_func, NULL, &modbus_task_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
