@@ -17,3 +17,7 @@
 *.html
 *.png
 *.css
+
+# free modbus files
+/freemodbus/demo/*
+!/freemodbus/demo/STM32_CMAKE
