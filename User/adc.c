@@ -28,7 +28,7 @@ void adc_task_func(void *argument){
 
     while(1){
         float result = get_stm_VDDA(&hadc1);
-        print_terminal("Stm intref: %.2f\n",result);
+        //print_terminal("Stm intref: %.2f\n",result);
         xQueueSend(adc_queueHandle, &result, 0);
         osDelay(1500);
     }

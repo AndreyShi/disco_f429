@@ -35,7 +35,7 @@
 
 /* Default to USART2 if MB_USART_NR is not defined */
 #ifndef MB_USART_NR
-  #define MB_USART_NR   2
+  #define MB_USART_NR   1
 #endif
 
 /* Define macros based on the selected USART */
