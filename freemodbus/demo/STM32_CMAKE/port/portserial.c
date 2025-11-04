@@ -124,18 +124,12 @@ void vMBPortSerialEnable(BOOL rxEnable, BOOL txEnable)
 
 BOOL xMBPortSerialPutByte(CHAR byte)
 {
-    //MB_USART->TDR = byte;
-    //HAL_UART_Transmit(MB_USART, (uint8_t*)&byte, 1, HAL_MAX_DELAY);
     MB_USART->DR = byte;
     return TRUE;
 }
 
 BOOL xMBPortSerialGetByte(CHAR *byte)
 {
-    //*byte = MB_USART->RDR;
-    //if (HAL_UART_Receive(MB_USART, (uint8_t*)byte, 1, 0) == HAL_OK)
-    //    { return TRUE;}
-    //return FALSE;
     *byte = MB_USART->DR;
     return TRUE;
 }
