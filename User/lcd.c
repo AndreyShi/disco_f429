@@ -14,25 +14,8 @@
 extern osMessageQueueId_t adc_queueHandle;
 
 void init_lcd(void){
-    return;
-}
-void print_lcd(int x, int y, const char *format, ...){
-    char buff[50] = {0};
-
-    va_list args;
-    va_start(args, format);
-    vsnprintf(buff, sizeof(buff), format, args);
-    va_end(args);
-
-    OLED_WriteString_light(0, &oled, y, x, buff);
-}
-
-void upd_lcd(void){
-    Convert_to_565Colors(&oled,(void*)LCD_FRAME_ADDRESS_SDRAM);
-}
-
-void lcd_task_func(void *argument){
     #ifdef LCD_SPI
+    //инициализация SPI в CubeMX
     ili9341_Init_direct();
     int rotation = 4;
     while(1){
@@ -45,6 +28,9 @@ void lcd_task_func(void *argument){
     } 
     #endif
     #ifndef LCD_TRAINING
+    //инициализация SPI в CubeMX
+    //инициализация LTDC в CubeMX
+    //инициализация external RAM в CubeMX
     ili9341_Init();
     #endif
     #ifdef LCD_BSP_EXAMPLE
@@ -65,6 +51,24 @@ void lcd_task_func(void *argument){
     BSP_LCD_SetFont(&Font16);
     BSP_LCD_DisplayStringAt(0, 35, (uint8_t*)"Drivers examples", CENTER_MODE);
     #endif
+}
+void print_lcd(int x, int y, const char *format, ...){
+    char buff[50] = {0};
+
+    va_list args;
+    va_start(args, format);
+    vsnprintf(buff, sizeof(buff), format, args);
+    va_end(args);
+
+    OLED_WriteString_light(0, &oled, y, x, buff);
+}
+
+void upd_lcd(void){
+    Convert_to_565Colors(&oled,(void*)LCD_FRAME_ADDRESS_SDRAM);
+}
+
+void lcd_task_func(void *argument){
+    init_lcd();
     
     memset((void*)LCD_FRAME_ADDRESS_SDRAM, 255, LCD_BUFFER_SIZE);
     signed char color = 0;
