@@ -64,7 +64,7 @@ void print_lcd(int x, int y, const char *format, ...){
 }
 
 void upd_lcd(void){
-    Convert_to_565Colors(&oled,(void*)LCD_FRAME_ADDRESS_SDRAM);
+    Copy_oled_mem(&oled,(void*)LCD_FRAME_ADDRESS_SDRAM,0);
 }
 
 void lcd_task_func(void *argument){

@@ -70,6 +70,6 @@ void OLED_SetTextCursor(OLED_HandleTypeDef *oled, uint16_t row, uint16_t col);
 // Инвертировать цвета дисплея
 void OLED_InvertColors(OLED_HandleTypeDef *oled, uint8_t invert);
 
-void Convert_to_565Colors(OLED_HandleTypeDef *oled, void* lcd_mem);
+void Copy_oled_mem(OLED_HandleTypeDef *oled, void* lcd_mem, int mem_rotate);
 
 #endif

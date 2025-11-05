@@ -317,47 +317,51 @@ void OLED_InvertColors(OLED_HandleTypeDef *oled, uint8_t invert) {
         OLED_WriteCommand(oled, 0xA6); // Normal display
     }
 }
-
-void Convert_to_565Colors(OLED_HandleTypeDef* oled, void* lcd_mem){
+/**
+ * @brief копирование в буфер с поворотом
+ * 
+ * @param oled структура содержащяя исходный буфер
+ * @param lcd_mem копия буфера с поворотом 
+ * @param mem_rotate поворот в памяти на 90, 180, 270
+ */
+void Copy_oled_mem(OLED_HandleTypeDef* oled, void* lcd_mem, int mem_rotate){
     uint16_t* lcd_buffer = (uint16_t*)lcd_mem;
     uint8_t* mono_buffer = (uint8_t*)&oled->buffer;
     
     
-    // Центрируем изображение 32x128 на экране 240x320
     int offset_x = (240 - OLED_HEIGHT) / 2; //
     int offset_y = (320 - OLED_WIDTH) / 2;  //
     
     // Копируем монохромное изображение в центр LCD
     for (int y = 0; y < OLED_HEIGHT; y++) {
-        __asm("nop");
         for (int x = 0; x < OLED_WIDTH; x++) {
             // Получаем значение пикселя из монохромного буфера
             int byte_index = x + (y / 8) * OLED_WIDTH;
             int bit_index = y % 8;
             int pixel_value = (mono_buffer[byte_index] >> bit_index) & 0x01;
 
-            // ПОВОРОТ на 90° против часовой стрелке:
-            // Новая X = старая Y
-            // Новая Y = 127 - старая X
-            int rotated_x = OLED_HEIGHT - 1 - y;      // 0-31
-            int rotated_y = x;           // 0-127  
+            int rotated_x = 0;
+            int rotated_y = 0;
 
-            // ПОВОРОТ на 90° по часовой стрелке:
-            //int rotated_x = y;         //(бывшая высота становится шириной)
-            //int rotated_y = 127 - x;    // (бывшая ширина становится высотой, перевернутой)
-
-            // Поворот на 180°
-            //int rotated_x = 127 - x;     // 0-127  
-            //int rotated_y = 31 - y;      // 0-31
-
-            // Поворот на 270° (эквивалентно 90° против часовой)
-            //int rotated_x = 31 - y;      // 0-31
-            //int rotated_y = x;           // 0-127
+            //TO DO разобраться с поворотом на 180
+            if(mem_rotate == 0){
+                rotated_x = OLED_HEIGHT - 1 - y; // 0-31
+                rotated_y = x;                   // 0-127  
+            }else if(mem_rotate == 1){
+                rotated_x = y;                 //(бывшая высота становится шириной)
+                rotated_y = OLED_WIDTH -1- x;    // (бывшая ширина становится высотой, перевернутой)
+            }else if(mem_rotate == 2){
+                rotated_x = OLED_WIDTH -1- x;  // 0-127  
+                rotated_y = OLED_HEIGHT -1- y; // 0-31
+            }else{
+                rotated_x = x; // 0-31
+                rotated_y = y;               // 0-127
+            }
             
-            // Устанавливаем цвет на LCD
             int lcd_x = rotated_x + offset_x;
             int lcd_y = rotated_y + offset_y;
             
+            //Копирование и установка цвета пикселя в RGB565
             if (lcd_x < 240 && lcd_y < 320) {
                 lcd_buffer[lcd_y * 240 + lcd_x] = pixel_value ? 0x0000 : 0xFFFF;
             }
