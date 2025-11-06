@@ -11,7 +11,7 @@ srcDirs:
   - freemodbus/modbus/functions
   - freemodbus/modbus/rtu
   - freemodbus/modbus/ascii
-  - freemodbus/demo/STM32_CMAKE/port
+  - freemodbus/port
 virtualFolder:
   name: <virtual_root>
   files:
@@ -45,7 +45,7 @@ targets:
         - freemodbus/modbus/rtu
         - freemodbus/modbus/ascii
         - freemodbus/modbus/tcp
-        - freemodbus/demo/STM32_CMAKE/port
+        - freemodbus/port
       libList: []
     excludeList: []
     toolchain: GCC
