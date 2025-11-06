@@ -1,48 +1,72 @@
-# FreeModbus Library
+## Общая структура FreeMODBUS
 
-## Introduction
+Библиотека организована по принципу  **разделения ядра протокола и платформенно-зависимого кода** :
 
-This is a fork of the FreeModbus protocol stack, extended with ports for:
+**text**
 
-- ADuc702x processors
-- STM32 processors using CMake build system
+```
+freemodbus/
+├── modbus/           # Ядро протокола (платформенно-независимое)
+├── port/            # Платформенно-зависимый код (адаптационный слой)
+└── samples/         # Примеры использования
+```
 
-FreeModbus is a Modbus ASCII/RTU and Modbus TCP implementation for embedded systems. It provides an implementation of the Modbus Application Protocol v1.1a and supports both the RTU and ASCII transmission modes as defined in the Modbus over serial line specification 1.0.
+## Детальный разбор папки `modbus`
 
-## STM32 CMake Port
+### 1. `ascii/` - Реализация ASCII-режима
 
-The STM32 CMake port is located in the `demo/STM32_CMAKE` directory and provides:
+* **Содержит:** Код для обработки Modbus в ASCII-формате
+* **Основные файлы:**
+  * `mbascii.c` - кодирование/декодирование ASCII-кадров
+  * `mbcrc.c` - вычисление CRC (общее с RTU)
+* **Особенности:** Работа с текстовым представлением данных, использует LRC-контрольную сумму
 
-- A generic implementation that can target multiple STM32 families
-- HAL-based peripheral access for portability
-- Integration with CMake build systems
-- Simple demo application
-- Support for the STM32G4 family (tested on Nucleo-G431RB)
+### 2. `rtu/` - Реализация RTU-режима
 
-## Documentation
+* **Содержит:** Код для обработки Modbus в RTU-формате (бинарный)
+* **Основные файлы:**
+  * `mbrtu.c` - кодирование/декодирование RTU-кадров
+  * `mbcrc.c` - вычисление CRC-16
+* **Особенности:** Бинарный формат, более эффективный чем ASCII, использует CRC-16
 
-Complete documentation of the original FreeModbus implementation can be found in the `doc/html` directory.
+### 3. `tcp/` - Реализация Modbus TCP
 
-For information specific to the STM32 CMake port, refer to the `demo/STM32_CMAKE/README.md` file.
+* **Содержит:** Код для работы по TCP/IP
+* **Основные файлы:**
+  * `mbtcp.c` - обработка TCP-сессий
+* **Особенности:** Работа поверх стека TCP/IP, не требует CRC (защита на уровне TCP)
 
-## License
+### 4. `functions/` - Обработчики Modbus-функций
 
-FreeModbus uses a multi-license approach:
+* **Содержит:** Реализацию стандартных функций Modbus
+* **Основные файлы:**
+  * `mbfunccoils.c` - функции работы с катушками (01, 05, 15)
+  * `mbfuncdisc.c` - функции работы с дискретными входами (02)
+  * `mbfuncholding.c` - функции работы с регистрами хранения (03, 06, 16)
+  * `mbfuncinput.c` - функции работы с входными регистрами (04)
+  * `mbfuncother.c` - прочие функции (07, 11, 12 и др.)
+  * `mbfuncdiag.c` - диагностические функции (08)
+  * `mbutils.c` - вспомогательные утилиты
 
-- **Core Protocol Stack** (in `modbus/` directory): BSD License
-- **Port Implementations** (in `demo/*/port/` directories): Generally LGPL License
-- **Demo Applications** (in `demo/*/` directories): Generally GPL License
+### 5. `include/` - Заголовочные файлы
 
-This licensing structure allows:
-- Using the core protocol stack in both open-source and proprietary applications (BSD)
-- Using the port implementations in proprietary applications with some restrictions (LGPL)
-- Using the demo applications only in GPL-compatible projects (GPL)
+* **Содержит:** Все публичные интерфейсы библиотеки
+* **Ключевые файлы:**
+  * `mb.h` - основной заголовочный файл, API для пользователя
+  * `mbconfig.h` - конфигурация библиотеки (включаемые функции, настройки)
+  * `mbport.h` - интерфейсы портирования (функции, которые нужно реализовать)
+  * `mbproto.h` - внутренние структуры протокола
+  * `mbframe.h` - функции работы с кадрами
 
-Always check the license header in individual source files for specific licensing terms.
+## Папка `port/` - Адаптационный слой
 
-## References
+Это **самая важная папка для портирования** на новую платформу:
 
-- [Original FreeModbus project](https://www.embedded-solutions.at/en/freemodbus/)
-- [Modbus specifications](https://modbus.org/specs.php)
+* **Содержит:** Реализацию аппаратно-зависимых функций
+* **Типичные файлы:**
+  * `portevent.c` - реализация системы событий (очереди событий)
+  * `porttimer.c` - реализация таймеров (для RTU/ASCII таймаутов)
+  * `portserial.c` - реализация последовательного порта (UART)
+  * `porttcp.c` - реализация TCP-сокетов (для Modbus TCP)
 
-
+**Важно:** Эти файлы не поставляются с библиотекой - их нужно писать под конкретную платформу (STM32, ESP32, Linux и т.д.)
