@@ -16,7 +16,7 @@
 
 // Размеры дисплея
 //#define OLED_WIDTH  128
-//#define OLED_HEIGHT  32
+//#define OLED_HEIGHT  64  //физически экран 128 на 32 буфер больше 128 на 64, переключение страниц добавил
 #define OLED_WIDTH  320
 #define OLED_HEIGHT 240
 #define FONT_WIDTH 5
@@ -28,6 +28,7 @@ typedef struct {
     uint8_t buffer[OLED_WIDTH * OLED_HEIGHT / 8];
     uint16_t currentX;
     uint16_t currentY;
+    int mempage;
 } OLED_HandleTypeDef;
 
 extern OLED_HandleTypeDef oled;

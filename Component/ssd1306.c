@@ -22,7 +22,7 @@ void OLED_Init(OLED_HandleTypeDef *oled, I2C_HandleTypeDef *hi2c) {
     oled->hi2c = hi2c;
     oled->currentX = 0;
     oled->currentY = 0;
-    
+    oled->mempage = 0;
     HAL_Delay(100);
     
     // Последовательность команд инициализации
@@ -67,16 +67,16 @@ void OLED_Clear(OLED_HandleTypeDef *oled) {
 // Обновление экрана
 int u = 0;
 void OLED_UpdateScreen(OLED_HandleTypeDef *oled) {
-    for (uint8_t i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i++) {
         OLED_WriteCommand(oled, 0xB0 + i); // Set page address
         OLED_WriteCommand(oled, 0x00);     // Set lower column address
         OLED_WriteCommand(oled, 0x10);     // Set higher column address
         
-        for (uint8_t j = 0; j < OLED_WIDTH; j++) {
+        for (int j = 0; j < OLED_WIDTH; j++) {
             if (u == 0)
-                {OLED_WriteData(oled, ~oled->buffer[j + (i * OLED_WIDTH)]);}
+                {OLED_WriteData(oled, ~oled->buffer[j + ((i + oled->mempage * 4) * OLED_WIDTH)]);}
             else
-                {OLED_WriteData(oled, oled->buffer[j + (i * OLED_WIDTH)]);}
+                {OLED_WriteData(oled,  oled->buffer[j + ((i + oled->mempage * 4) * OLED_WIDTH)]);}
 
             //DWT_Delay(0.005);
         }
