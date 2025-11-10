@@ -182,7 +182,7 @@ eMBInit( eMBMode eMode, UCHAR ucSlaveAddress, UCHAR ucPort, ULONG ulBaudRate, eM
             pxMBFrameCBTransmitterEmpty = xMBRTUTransmitFSM;
             pxMBPortCBTimerExpired = xMBRTUTimerT35Expired;
 #endif
-            eStatus = eMBRTUInit( ucMBAddress, ucPort, ulBaudRate, eParity, ucStopBits );
+            eStatus = eMBRTUInit( ucMBAddress, ucPort, ulBaudRate, eParity);
             break;
 #endif
 #if MB_ASCII_ENABLED > 0
