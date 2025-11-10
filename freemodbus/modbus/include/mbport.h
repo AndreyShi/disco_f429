@@ -114,9 +114,9 @@ void            xMBPortSerialClose( void );
 
 void            vMBPortSerialEnable( BOOL xRxEnable, BOOL xTxEnable );
 
-INLINE BOOL     xMBPortSerialGetByte( CHAR * pucByte );
+BOOL     xMBPortSerialGetByte( CHAR * pucByte );
 
-INLINE BOOL     xMBPortSerialPutByte( CHAR ucByte );
+BOOL     xMBPortSerialPutByte( CHAR ucByte );
 
 BOOL            xMBMasterPortSerialInit( UCHAR ucPort, ULONG ulBaudRate,
                                    UCHAR ucDataBits, eMBParity eParity );
