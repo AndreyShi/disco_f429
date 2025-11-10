@@ -111,7 +111,7 @@ eMBASCIIInit( UCHAR ucSlaveAddress, UCHAR ucPort, ULONG ulBaudRate, eMBParity eP
     ENTER_CRITICAL_SECTION(  );
     ucMBLFCharacter = MB_ASCII_DEFAULT_LF;
 
-    if( xMBPortSerialInit( ucPort, ulBaudRate, 7, eParity, ucStopBits ) != TRUE )
+    if( xMBPortSerialInit( ucPort, ulBaudRate, 7, eParity) != TRUE )
     {
         eStatus = MB_EPORTERR;
     }

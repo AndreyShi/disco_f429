@@ -26,7 +26,7 @@ UART_HandleTypeDef          uart_mb;
 */
 
 
-BOOL xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity eParity, UCHAR ucStopBits  )
+BOOL xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity eParity)
 {
     UNUSED( ucPORT );
 

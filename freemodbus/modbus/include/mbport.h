@@ -70,8 +70,7 @@ BOOL            xMBPortEventGet(  /*@out@ */ eMBEventType * eEvent );
 /* ----------------------- Serial port functions ----------------------------*/
 
 BOOL            xMBPortSerialInit( UCHAR ucPort, ULONG ulBaudRate,
-                                   UCHAR ucDataBits, eMBParity eParity,
-                                   UCHAR ucStopBits );
+                                   UCHAR ucDataBits, eMBParity eParity);
 
 void            vMBPortClose( void );
 
