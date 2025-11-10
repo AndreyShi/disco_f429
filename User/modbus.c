@@ -83,7 +83,8 @@ eMBRegCoilsCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNCoils,
             // Используем утилиту FreeModBUS для установки битов
             xMBUtilSetBits(pucRegBuffer, usAddress + i, 1, 0);
         }
-        
+        xMBUtilSetBits(pucRegBuffer, usAddress + 1, 1, 1);
+
         eStatus = MB_ENOERR;
     }
     else
