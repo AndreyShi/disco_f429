@@ -16,6 +16,7 @@ virtualFolder:
   name: <virtual_root>
   files:
     - path: freemodbus/modbus/mb.c
+    - path: freemodbus/modbus/mb_m.c
   folders: []
 dependenceList: []
 outDir: build
