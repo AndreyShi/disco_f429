@@ -16,6 +16,10 @@
         "mb.h": "c",
         "mbport.h": "c",
         "port_internal.h": "c",
-        "port.h": "c"
+        "port.h": "c",
+        "ssd1306.h": "c",
+        "mb_m.h": "c",
+        "mbrtu.h": "c",
+        "mbconfig.h": "c"
     }
 }

@@ -14,7 +14,7 @@ eMBErrorCode eMBRegInputCB(UCHAR *pucRegBuffer, USHORT usAddress, USHORT usNRegs
 eMBErrorCode eMBRegHoldingCB(UCHAR *pucRegBuffer, USHORT usAddress, USHORT usNRegs, eMBRegisterMode eMode);
 eMBErrorCode eMBRegCoilsCB(UCHAR *pucRegBuffer, USHORT usAddress, USHORT usNCoils, eMBRegisterMode eMode);
 eMBErrorCode eMBRegDiscreteCB(UCHAR *pucRegBuffer, USHORT usAddress, USHORT usNDiscrete);
-
+//TODO: поменяться ролями: здесь делаем Client он же Master, а на ПК Server он же Slave
 void modbus_task_func(void *argument){
 
     //HAL_UART_DeInit(&huart1);
@@ -23,7 +23,6 @@ void modbus_task_func(void *argument){
     eMBEnable();
 
     while(1){
-        //TO DO сделать TAskNotification чтобы ждал сигнала когда пакет принят 
         osDelay(5);
         eMBPoll();
     }
