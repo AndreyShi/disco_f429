@@ -127,18 +127,18 @@ void            xMBMasterPortSerialClose( void );
 
 void            vMBMasterPortSerialEnable( BOOL xRxEnable, BOOL xTxEnable );
 
-INLINE BOOL     xMBMasterPortSerialGetByte( CHAR * pucByte );
+BOOL     xMBMasterPortSerialGetByte( CHAR * pucByte );
 
-INLINE BOOL     xMBMasterPortSerialPutByte( CHAR ucByte );
+BOOL     xMBMasterPortSerialPutByte( CHAR ucByte );
 
 /* ----------------------- Timers functions ---------------------------------*/
 BOOL            xMBPortTimersInit( USHORT usTimeOut50us );
 
 void            xMBPortTimersClose( void );
 
-INLINE void     vMBPortTimersEnable( void );
+void     vMBPortTimersEnable( void );
 
-INLINE void     vMBPortTimersDisable( void );
+void     vMBPortTimersDisable( void );
 
 void            vMBPortTimersDelay( USHORT usTimeOutMS );
 
@@ -146,13 +146,13 @@ BOOL            xMBMasterPortTimersInit( USHORT usTimeOut50us );
 
 void            xMBMasterPortTimersClose( void );
 
-INLINE void     vMBMasterPortTimersT35Enable( void );
+void     vMBMasterPortTimersT35Enable( void );
 
-INLINE void     vMBMasterPortTimersConvertDelayEnable( void );
+void     vMBMasterPortTimersConvertDelayEnable( void );
 
-INLINE void     vMBMasterPortTimersRespondTimeoutEnable( void );
+void     vMBMasterPortTimersRespondTimeoutEnable( void );
 
-INLINE void     vMBMasterPortTimersDisable( void );
+void     vMBMasterPortTimersDisable( void );
 
 /* ----------------- Callback for the master error process ------------------*/
 void            vMBMasterErrorCBRespondTimeout( UCHAR ucDestAddress, const UCHAR* pucPDUData,
