@@ -11,6 +11,7 @@ extern UART_HandleTypeDef huart1;
 #define DEBUG_UART_OUT   &huart1
 #endif
 
+
 #define printf print_terminal
 
 #define HARDFAULT __asm volatile (".short 0xde00")
