@@ -14,10 +14,17 @@ eMBErrorCode eMBRegInputCB(UCHAR *pucRegBuffer, USHORT usAddress, USHORT usNRegs
 eMBErrorCode eMBRegHoldingCB(UCHAR *pucRegBuffer, USHORT usAddress, USHORT usNRegs, eMBRegisterMode eMode);
 eMBErrorCode eMBRegCoilsCB(UCHAR *pucRegBuffer, USHORT usAddress, USHORT usNCoils, eMBRegisterMode eMode);
 eMBErrorCode eMBRegDiscreteCB(UCHAR *pucRegBuffer, USHORT usAddress, USHORT usNDiscrete);
+
+/*-----------------Modbus Master register callback functions-----------------*/
+eMBErrorCode eMBMasterRegCoilsCB( UCHAR * pucRegBuffer, USHORT usAddress,USHORT usNCoils, eMBRegisterMode eMode );
+eMBErrorCode eMBMasterRegDiscreteCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNDiscrete );
+eMBErrorCode eMBMasterRegHoldingCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs, eMBRegisterMode eMode );
+eMBErrorCode eMBMasterRegInputCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs );
+
 //TODO: поменяться ролями: здесь делаем Client он же Master, а на ПК Server он же Slave
 void modbus_task_func(void *argument){
     MB_Uart_Init();
-    /*
+    ///*
     //TODO: Портировать ModbusMaster под STM платформу
     //Master(Client)
     eMBMasterInit(MB_RTU, 0, 115200, MB_PAR_NONE);
@@ -28,8 +35,8 @@ void modbus_task_func(void *argument){
         eMBMasterPoll();
         osDelay(5);
     }
-    */
-    ///*
+    //*/
+    /*
     //Slave(Server)
     eMBInit(MB_RTU, 1, 0, 115200, MB_PAR_NONE, 1);
     eMBEnable();
@@ -38,7 +45,7 @@ void modbus_task_func(void *argument){
         osDelay(5);
         eMBPoll();
     }
-    //*/
+    */
 
 }
 
@@ -116,4 +123,18 @@ eMBRegDiscreteCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNDiscrete )
     UNUSED( usNDiscrete );
 
     return MB_ENOREG;
+}
+
+
+eMBErrorCode eMBMasterRegCoilsCB( UCHAR * pucRegBuffer, USHORT usAddress,USHORT usNCoils, eMBRegisterMode eMode ){
+     return MB_ENOREG;
+}
+eMBErrorCode eMBMasterRegDiscreteCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNDiscrete ){
+     return MB_ENOREG;
+}
+eMBErrorCode eMBMasterRegHoldingCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs, eMBRegisterMode eMode ){
+     return MB_ENOREG;
+}
+eMBErrorCode eMBMasterRegInputCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs ){
+     return MB_ENOREG;
 }
