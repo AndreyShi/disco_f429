@@ -72,10 +72,14 @@ void lcd_task_func(void *argument){
     
     memset((void*)LCD_FRAME_ADDRESS_SDRAM, 255, LCD_BUFFER_SIZE);
     signed char color = 0;
+    int delay_ad = 700;
     float result = 0.0F;
     while(1){
         color++;
-        osDelay(10);
+        if (color >= 124 || color <= -124)
+            { osDelay(700);}
+        else
+            { osDelay(10);}
         print_lcd(0, 0, "Hello: %4d", color);
         xQueueReceive(adc_queueHandle, &result, 0);
         print_lcd(0, 1, "stm vdda: %.2f", result);
