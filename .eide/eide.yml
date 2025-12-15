@@ -4,6 +4,7 @@ type: ARM
 deviceName: null
 packDir: null
 srcDirs:
+  - TouchGFX
   - Core
   - Middlewares
   - Drivers
@@ -38,6 +39,9 @@ targets:
         - Middlewares/Third_Party/FreeRTOS/Source/include
         - Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2
         - Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F
+        - TouchGFX/App
+        - TouchGFX/target/generated
+        - TouchGFX/target
         - Drivers/Display
         - Drivers/BSP/Components/ili9341
         - Drivers/BSP/STM32F429I-Discovery
@@ -62,6 +66,8 @@ targets:
             ASM_FLAGS: -DDEBUG
           beforeBuildTasks: []
           c/cpp-compiler:
+            CXX_FLAGS: ""
+            C_FLAGS: ""
             language-c: c11
             language-cpp: c++11
             one-elf-section-per-data: true
@@ -70,13 +76,15 @@ targets:
             warnings: all-warnings
           global:
             $float-abi-type: hard
-            arm-thumb-mode: thumb
+            misc-control: []
             not-use-syscalls: true
             output-debug-info: enable
+            use-newlib-nano: true
           linker:
             $outputTaskExcludes:
               - .bin
-            $toolName: auto
+            LD_FLAGS: ""
+            LIB_FLAGS: ""
             output-format: elf
             remove-unused-input-sections: true
         scatterFilePath: STM32F429ZITX_FLASH.ld
@@ -114,6 +122,9 @@ targets:
         - Middlewares/Third_Party/FreeRTOS/Source/include
         - Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2
         - Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F
+        - TouchGFX/App
+        - TouchGFX/target/generated
+        - TouchGFX/target
       libList: []
     excludeList: []
     toolchain: GCC
