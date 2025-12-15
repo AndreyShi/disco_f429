@@ -51,7 +51,12 @@ targets:
         - freemodbus/modbus/ascii
         - freemodbus/modbus/tcp
         - freemodbus/port
-        - Middlewares/ST
+        - TouchGFX/target/generated/images/include
+        - TouchGFX/gui/include
+        - TouchGFX/target/generated/gui_generated/include
+        - TouchGFX/target/generated/texts/include
+        - TouchGFX/target/generated/fonts/include
+        - Middlewares/ST/touchgfx/framework/include
       libList: []
     excludeList: []
     toolchain: GCC
