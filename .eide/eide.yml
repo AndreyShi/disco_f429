@@ -51,6 +51,7 @@ targets:
         - freemodbus/modbus/ascii
         - freemodbus/modbus/tcp
         - freemodbus/port
+        - Middlewares/ST
       libList: []
     excludeList: []
     toolchain: GCC
