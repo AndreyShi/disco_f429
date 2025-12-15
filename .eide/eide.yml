@@ -13,6 +13,7 @@ srcDirs:
   - freemodbus/modbus/rtu
   - freemodbus/modbus/ascii
   - freemodbus/port
+  - Middlewares/ST/touchgfx/framework/source
 virtualFolder:
   name: <virtual_root>
   files:
