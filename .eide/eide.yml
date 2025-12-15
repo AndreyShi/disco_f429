@@ -12,6 +12,7 @@ srcDirs:
   - freemodbus/modbus/rtu
   - freemodbus/modbus/ascii
   - freemodbus/port
+  - lvgl/src
 virtualFolder:
   name: <virtual_root>
   files:

@@ -21,3 +21,6 @@
 # free modbus files
 /freemodbus/demo/*
 !/freemodbus/demo/STM32_CMAKE
+
+# lvgl lib
+lvgl
