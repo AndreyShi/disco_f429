@@ -159,9 +159,10 @@ void lcd_task_func(void *argument){
     lv_obj_t * label = lv_label_create(lv_screen_active());
     //lv_obj_center(label);
     lv_obj_set_pos(label, 10, 150); // x, y
+    lv_obj_set_style_text_font(label, &lv_font_unscii_16, 0);
     
     while(1){
-        lv_label_set_text_fmt(label, "Hello world %5d",color++);
+        lv_label_set_text_fmt(label, "Привет %5d",color++);
         printf("%d\n",result * 100);
         lv_timer_handler(); // Должен вызываться каждые ~5-30 мс
         osDelay(500);
